@@ -472,7 +472,8 @@ async function firebaseStore(cfg) {
   }
   const root = 'shops/' + (cfg.shopId || 'main');
   const denied = () => {
-    showGate(`<h2>บัญชีนี้ยังไม่มีสิทธิ์</h2><p><b class="mono">${esc(user.email)}</b> ยังไม่อยู่ในรายชื่อที่เข้าร้านนี้ได้ ให้ผู้ดูแลเพิ่มอีเมลนี้ใน Firestore rules แล้วลองใหม่</p>
+    showGate(`<h2>ฐานข้อมูลยังไม่อนุญาตให้เข้า</h2><p>ล็อกอินเป็น <b class="mono">${esc(user.email)}</b> แล้ว แต่ Firestore ปฏิเสธการอ่านข้อมูล — ตรวจว่าวาง Rules ใน Firebase console แล้วกด Publish (รอประมาณ 1 นาทีให้มีผล)</p>
+      <button class="btn primary" onclick="location.reload()">ลองอีกครั้ง</button>
       <button class="btn" id="gateOut">ออกจากระบบแล้วใช้บัญชีอื่น</button>`);
     $('#gateOut').addEventListener('click', () => auth.signOut().then(() => location.reload()));
   };
