@@ -1,19 +1,14 @@
 rules_version = '2';
 
 // คัดลอกทั้งไฟล์ไปวางที่ Firebase console → Firestore Database → Rules แล้วกด Publish
-// ใส่อีเมล Google ของคนที่ให้เข้าร้านได้ (ตัวพิมพ์เล็กทั้งหมด)
+//
+// ตอนนี้ (ชั่วคราว): ใครก็ได้ที่ล็อกอินด้วยบัญชี Google เข้าอ่าน/เขียนข้อมูลร้านได้
+// ถ้าจะจำกัดเฉพาะบางอีเมลภายหลัง ให้เปลี่ยนเงื่อนไขเป็น:
+//   request.auth != null && request.auth.token.email.lower() in ['someone@gmail.com']
 service cloud.firestore {
   match /databases/{database}/documents {
-    function allowed() {
-      return request.auth != null
-        && request.auth.token.email_verified == true
-        && request.auth.token.email.lower() in [
-          'owner@example.com'
-        ];
-    }
-
     match /shops/{shopId}/{document=**} {
-      allow read, write: if allowed();
+      allow read, write: if request.auth != null;
     }
   }
 }
