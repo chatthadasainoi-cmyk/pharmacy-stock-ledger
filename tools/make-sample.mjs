@@ -128,7 +128,7 @@ for (const dir of ['products', 'moves', 'meta']) mkdirSync(join(out, dir), { rec
 for (const [id, p] of Object.entries(products)) writeFileSync(join(out, 'products', id + '.json'), JSON.stringify(p));
 for (const [id, d] of Object.entries(days)) writeFileSync(join(out, 'moves', id + '.json'), JSON.stringify(d));
 writeFileSync(join(out, 'meta', 'demo.json'), JSON.stringify(demo));
-writeFileSync(join(out, 'sample-backup.json'), JSON.stringify({ app: 'samut-khlang-ya', version: 1, exportedAt: new Date().toISOString(), products, moves: days, meta: {} }));
+writeFileSync(join(out, 'sample-backup.json'), JSON.stringify({ app: 'samut-khlang-ya', version: 1, exportedAt: new Date().toISOString(), products, moves: days, meta: { demo } }));
 
 const summary = {};
 for (const [k, q] of Object.entries(stock)) { const [pid] = k.split('|'); summary[pid] = (summary[pid] || 0) + q; }
