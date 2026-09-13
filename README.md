@@ -25,10 +25,26 @@
 
 ## การเก็บข้อมูล
 
-| เปิดจากไหน | ข้อมูลเก็บที่ |
+| ตั้งค่าแบบไหน | ข้อมูลเก็บที่ |
 |---|---|
-| ลิงก์ Artifact บน claude.ai | ฐานข้อมูลของลิงก์นั้น ซิงก์ระหว่างมือถือกับคอม |
-| เปิดไฟล์ `index.html` เอง หรือโฮสต์เอง | `localStorage` ของเบราว์เซอร์เครื่องนั้น ควรสำรองเป็นไฟล์เป็นประจำ |
+| ใส่ค่า Firebase ใน `config.js` | Cloud Firestore ต้องล็อกอินด้วย Google ซิงก์ทุกเครื่อง และใช้ต่อได้ตอนเน็ตหลุด |
+| `config.js` ยังเป็น `firebase: null` | `localStorage` ของเบราว์เซอร์เครื่องนั้น ควรสำรองเป็นไฟล์เป็นประจำ |
+
+### ตั้งค่า Firebase (ทำครั้งเดียว)
+
+1. สร้างโปรเจกต์ที่ [console.firebase.google.com](https://console.firebase.google.com) ไม่ต้องเปิด Google Analytics
+2. เปิด **Build → Authentication → Get started** แล้วเปิดใช้ **Google** เป็นวิธีล็อกอิน
+3. ไปที่ **Authentication → Settings → Authorized domains** แล้วเพิ่มโดเมนเว็บ เช่น `<ชื่อบัญชี>.github.io`
+4. เปิด **Build → Firestore Database → Create database**
+   - เลือก location `asia-southeast1` (สิงคโปร์)
+   - เลือก production mode
+5. ในแท็บ **Rules** วางเนื้อหาจาก `firestore.rules` แก้รายชื่ออีเมลที่ให้เข้าร้านได้ แล้วกด **Publish**
+6. ไปที่ **Project settings → Your apps → Web (`</>`)** แล้วลงทะเบียนแอป
+7. คัดลอกค่า `firebaseConfig` มาวางแทน `null` ใน `config.js`
+
+ค่าใน `firebaseConfig` เป็นค่าสาธารณะของเว็บแอป ไม่ใช่รหัสลับ ใครจะอ่านหรือเขียนข้อมูลได้ถูกกำหนดโดย `firestore.rules`
+
+แพ็กเกจฟรี (Spark) อ่านได้วันละ 50,000 ครั้งและเขียนได้วันละ 20,000 ครั้ง ร้านยาร้านเดียวใช้ไม่ถึง
 
 ถ้าจะใช้กล้องสด ต้องเปิดผ่าน `https://` หรือ `localhost` เพราะเบราว์เซอร์ไม่อนุญาตกล้องบนหน้า `file://`
 

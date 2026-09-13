@@ -239,6 +239,11 @@ td.r,th.r{text-align:right}
 @keyframes tin{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion: reduce){.toast{animation:none}}
 
+.gate{position:fixed;inset:0;z-index:100;background:var(--ground);display:grid;place-items:center;padding:20px}
+.gate-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:28px;display:flex;flex-direction:column;gap:16px}
+.gate-card .brand{padding:0}
+.gate-card p{color:var(--muted)}
+.linkbtn{border:0;background:transparent;color:var(--accent-strong);font-weight:600;cursor:pointer;padding:0;text-decoration:underline}
 .tabbar{display:none}
 @media (max-width: 980px){
   .sale-grid,.rc-grid,.home-grid{grid-template-columns:minmax(0,1fr)}
@@ -322,7 +327,9 @@ td.r,th.r{text-align:right}
 <input type="file" id="importInput" accept="application/json,.json" hidden>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 
+<div class="gate" id="gate" hidden></div>
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="config.js"></script>
 <script>
 (() => {
 'use strict';
@@ -425,6 +432,64 @@ function localStore() {
     async update(col, id, part) { data[col] = data[col] || {}; data[col][id] = merge(data[col][id] || {}, clone(part)); save(); emit(col); },
     async del(col, id) { if (data[col]) delete data[col][id]; save(); emit(col); },
     async addEntries(day, entries) { data.moves[day] = merge(data.moves[day] || { date: day, entries: {} }, { entries: clone(entries) }); save(); emit('moves'); },
+  };
+}
+function loadScript(src) {
+  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('โหลด ' + src + ' ไม่สำเร็จ')); document.head.appendChild(s); });
+}
+const BRAND = `<div class="brand"><div class="brand-mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 22 22"><g fill="currentColor"><rect x="2" y="4" width="2" height="14"/><rect x="5.5" y="4" width="1" height="14"/><rect x="8" y="4" width="3" height="14"/><rect x="12.5" y="4" width="1" height="14"/><rect x="15" y="4" width="2" height="14"/><rect x="18.5" y="4" width="1.5" height="14"/></g></svg></div><div class="brand-name">สมุดคลังยา</div></div>`;
+function showGate(inner) { const g = $('#gate'); g.innerHTML = `<div class="gate-card">${BRAND}${inner}</div>`; g.hidden = false; }
+function hideGate() { $('#gate').hidden = true; $('#gate').innerHTML = ''; }
+// Firebase (Firestore + Google sign-in). Writes are fired without awaiting the server so the
+// counter keeps working offline; Firestore applies them locally at once and syncs later.
+async function firebaseStore(cfg) {
+  const base = 'https://www.gstatic.com/firebasejs/10.14.1/';
+  await loadScript(base + 'firebase-app-compat.js');
+  await loadScript(base + 'firebase-auth-compat.js');
+  await loadScript(base + 'firebase-firestore-compat.js');
+  const fb = window.firebase;
+  if (!fb.apps.length) fb.initializeApp(cfg.firebase);
+  const auth = fb.auth(), fs = fb.firestore();
+  try { fs.settings({ ignoreUndefinedProperties: true, merge: true }); } catch (e) { /* settings already applied */ }
+  try { await fs.enablePersistence({ synchronizeTabs: true }); } catch (e) { /* private window or unsupported: online only */ }
+  const user = await new Promise(res => { const un = auth.onAuthStateChanged(u => { un(); res(u); }); });
+  if (!user) {
+    showGate(`<h2>เข้าสู่ระบบ</h2><p>ใช้บัญชี Google ที่ได้รับสิทธิ์เข้าร้านนี้ ข้อมูลจะซิงก์ทุกเครื่องที่ล็อกอินบัญชีเดียวกัน</p>
+      <button class="btn primary lg" id="gateLogin">เข้าสู่ระบบด้วย Google</button><p class="small" id="gateMsg"></p>`);
+    $('#gateLogin').addEventListener('click', async () => {
+      const provider = new fb.auth.GoogleAuthProvider(); provider.setCustomParameters({ prompt: 'select_account' });
+      $('#gateMsg').textContent = '';
+      try { await auth.signInWithPopup(provider); location.reload(); }
+      catch (e) {
+        if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') return auth.signInWithRedirect(provider);
+        if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') return;
+        $('#gateMsg').textContent = e.code === 'auth/unauthorized-domain'
+          ? `โดเมน ${location.hostname} ยังไม่ได้เพิ่มใน Firebase → Authentication → Settings → Authorized domains`
+          : 'เข้าสู่ระบบไม่สำเร็จ: ' + (e.message || e.code);
+      }
+    });
+    return null;
+  }
+  const root = 'shops/' + (cfg.shopId || 'main');
+  const denied = () => {
+    showGate(`<h2>บัญชีนี้ยังไม่มีสิทธิ์</h2><p><b class="mono">${esc(user.email)}</b> ยังไม่อยู่ในรายชื่อที่เข้าร้านนี้ได้ ให้ผู้ดูแลเพิ่มอีเมลนี้ใน Firestore rules แล้วลองใหม่</p>
+      <button class="btn" id="gateOut">ออกจากระบบแล้วใช้บัญชีอื่น</button>`);
+    $('#gateOut').addEventListener('click', () => auth.signOut().then(() => location.reload()));
+  };
+  try { await fs.doc(root + '/meta/settings').get(); }
+  catch (e) { if (e.code === 'permission-denied') { denied(); return null; } }
+  const fire = p => { p.catch(e => { if (e.code === 'permission-denied') denied(); else toast(errText(e), 'err'); }); return Promise.resolve(); };
+  return {
+    kind: 'firebase', email: user.email,
+    watch(col, cb) {
+      return fs.collection(root + '/' + col).onSnapshot(s => { const out = {}; s.forEach(d => { out[d.id] = d.data(); }); cb(out); },
+        e => { if (e.code === 'permission-denied') denied(); else toast('การเชื่อมต่อข้อมูลขัดข้อง: ' + (e.message || e.code), 'err'); });
+    },
+    set: (col, id, data) => fire(fs.doc(`${root}/${col}/${id}`).set(data)),
+    update: (col, id, data) => fire(fs.doc(`${root}/${col}/${id}`).set(data, { merge: true })),
+    del: (col, id) => fire(fs.doc(`${root}/${col}/${id}`).delete()),
+    addEntries: (day, entries) => fire(fs.doc(`${root}/moves/${day}`).set({ date: day, entries }, { merge: true })),
+    signOut: () => auth.signOut().then(() => location.reload()),
   };
 }
 let Store = null;
@@ -930,7 +995,7 @@ function viewSettings() {
     </section>
     <section class="panel rc-form">
       <h2>ข้อมูล</h2>
-      <p class="small muted">${Store.kind === 'db' ? 'ข้อมูลเก็บบนคลาวด์ของลิงก์นี้ เปิดจากมือถือหรือคอมก็เห็นข้อมูลเดียวกัน' : 'ข้อมูลเก็บในเบราว์เซอร์เครื่องนี้เท่านั้น — สำรองเป็นไฟล์เป็นประจำ'} · ยา ${Object.keys(S.products).length} รายการ · ${nMoves} การเคลื่อนไหวใน ${nDays} วัน</p>
+      <p class="small muted">${Store.kind === 'firebase' ? `ข้อมูลเก็บบน Firebase ซิงก์ทุกเครื่องที่ล็อกอินบัญชีที่ได้รับสิทธิ์ ใช้ต่อได้ตอนเน็ตหลุด · ล็อกอินเป็น <span class="mono">${esc(Store.email)}</span>` : Store.kind === 'db' ? 'ข้อมูลเก็บบนคลาวด์ของลิงก์นี้ เปิดจากมือถือหรือคอมก็เห็นข้อมูลเดียวกัน' : 'ข้อมูลเก็บในเบราว์เซอร์เครื่องนี้เท่านั้น — สำรองเป็นไฟล์เป็นประจำ'} · ยา ${Object.keys(S.products).length} รายการ · ${nMoves} การเคลื่อนไหวใน ${nDays} วัน</p>
       <div class="actions"><button class="btn" data-action="export-json">สำรองข้อมูล (.json)</button><button class="btn" data-action="import-json">นำเข้าไฟล์สำรอง</button><button class="btn" data-action="export-csv-all">ส่งออกประวัติทั้งหมด (CSV)</button></div>
     </section>
     <section class="panel rc-form" style="grid-column:1 / -1">
@@ -1256,6 +1321,7 @@ const A = {
     for (const [id, dd] of Object.entries(data.moves || {})) await Store.set('moves', id, dd);
     if (data.meta && data.meta.settings) await Store.set('meta', 'settings', data.meta.settings);
     S.modal = null; toast('นำเข้าข้อมูลแล้ว'); render(); }); },
+  'sign-out'() { if (Store && Store.signOut) Store.signOut(); },
   'clear-sample'() { S.modal = { kind: 'clear-sample' }; render(); },
   'clear-sample-confirm'() { safe(async () => {
     for (const [id, dd] of Object.entries(S.days)) {
@@ -1332,10 +1398,19 @@ document.addEventListener('keydown', e => {
 (async function boot() {
   const d14 = new Date(); d14.setDate(d14.getDate() - 13); S.lg.from = dayKey(d14); S.lg.to = todayKey();
   render();
-  const db = await getCap('db');
-  Store = db ? dbStore(db) : localStore();
+  const cfg = window.KHLANGYA_CONFIG;
+  if (cfg && cfg.firebase && cfg.firebase.apiKey) {
+    try { Store = await firebaseStore(cfg); }
+    catch (e) { showGate(`<h2>เชื่อมต่อฐานข้อมูลไม่ได้</h2><p>${esc(e.message || e)} — ตรวจอินเทอร์เน็ตแล้วรีโหลดหน้า</p><button class="btn primary" onclick="location.reload()">รีโหลด</button>`); return; }
+    if (!Store) return;
+  } else {
+    const db = await getCap('db');
+    Store = db ? dbStore(db) : localStore();
+  }
   $('#storeDot').classList.add('on');
-  $('#storeText').textContent = Store.kind === 'db' ? 'ซิงก์ข้อมูลข้ามอุปกรณ์' : 'เก็บข้อมูลในเบราว์เซอร์นี้';
+  $('#storeText').innerHTML = Store.kind === 'firebase'
+    ? `ซิงก์กับ Firebase<br><span class="mono" style="word-break:break-all">${esc(Store.email)}</span><br><button class="linkbtn" data-action="sign-out">ออกจากระบบ</button>`
+    : Store.kind === 'db' ? 'ซิงก์ข้อมูลข้ามอุปกรณ์' : 'เก็บข้อมูลในเบราว์เซอร์นี้';
   Store.watch('products', data => { S.products = data; S.ready.products = true; compute(); render(); });
   Store.watch('moves', data => { S.days = data; S.ready.moves = true; compute(); render(); });
   Store.watch('meta', data => { S.meta = data; render(); });

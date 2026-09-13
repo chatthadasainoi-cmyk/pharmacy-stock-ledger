@@ -1,0 +1,19 @@
+rules_version = '2';
+
+// คัดลอกทั้งไฟล์ไปวางที่ Firebase console → Firestore Database → Rules แล้วกด Publish
+// ใส่อีเมล Google ของคนที่ให้เข้าร้านได้ (ตัวพิมพ์เล็กทั้งหมด)
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function allowed() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.lower() in [
+          'owner@example.com'
+        ];
+    }
+
+    match /shops/{shopId}/{document=**} {
+      allow read, write: if allowed();
+    }
+  }
+}
