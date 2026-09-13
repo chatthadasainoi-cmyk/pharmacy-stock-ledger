@@ -1,137 +1,80 @@
-// Generates sample data (clearly flagged `sample: true`) for trying the app.
-// Usage: node tools/make-sample.mjs <outDir>
-// Writes products/<id>.json, moves/<YYYY-MM-DD>.json, meta/demo.json and sample-backup.json
-// (the last one can be imported through ตั้งค่า → นำเข้าไฟล์สำรอง).
+// Builds clearly fictional sample data for trying the app.
+//   node tools/make-sample.mjs <outDir> [path-to-xlsx-module]
+// Writes <outDir>/sample-backup.json (import via ตั้งค่า → นำเข้าไฟล์สำรอง, or the "ลองกับข้อมูลตัวอย่าง" button)
+// and, when the SheetJS module path is given, <outDir>/ตัวอย่างไฟล์รับสินค้า.xlsx laid out like the shop's receiving sheet.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { createRequire } from 'node:module';
 
 const out = process.argv[2] || 'sample';
+const xlsxPath = process.argv[3];
+const TODAY = new Date(2026, 8, 13);
 const pad = n => String(n).padStart(2, '0');
 const dayKey = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const addDays = n => { const d = new Date(TODAY); d.setDate(d.getDate() + n); return dayKey(d); };
 const eanCheck = d12 => { let s = 0; for (let i = 0; i < 12; i++) s += +d12[i] * (i % 2 ? 3 : 1); return (10 - (s % 10)) % 10; };
-const ean = body12 => body12 + eanCheck(body12);
-let seed = 20260913;
-const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-const pick = arr => arr[Math.floor(rnd() * arr.length)];
+const ean = n => { const b = '2000000' + String(n).padStart(5, '0'); return b + eanCheck(b); };
+const safeId = s => String(s).trim().replace(/[^A-Za-z0-9_-]/g, '_');
 
-const U = (name, size, price) => ({ name, size, price });
-const P = [
-  { id: 'p-para500', name: 'พาราเซตามอล 500', generic: 'Paracetamol', strength: '500 mg', form: 'เม็ด', cat: 'ยาสามัญประจำบ้าน', reorder: 200, w: 10,
-    units: [U('เม็ด', 1, 1), U('แผง', 10, 10), U('กล่อง', 100, 85)], codes: [['2000000100010', 'กล่อง'], ['2000000100027', 'แผง']],
-    lots: [['P2507A', '2027-06-30', 600]] },
-  { id: 'p-amox500', name: 'อะม็อกซีซิลลิน 500', generic: 'Amoxicillin', strength: '500 mg', form: 'แคปซูล', cat: 'ยาอันตราย', reorder: 100, w: 6,
-    units: [U('แคปซูล', 1, 4), U('แผง', 10, 35), U('กล่อง', 100, 300)], codes: [['2000000200017', 'กล่อง']],
-    lots: [['AM2411', '2026-12-31', 300]] },
-  { id: 'p-cet10', name: 'เซทิริซีน 10', generic: 'Cetirizine', strength: '10 mg', form: 'เม็ด', cat: 'ยาอันตราย', reorder: 50, w: 6,
-    units: [U('เม็ด', 1, 2), U('แผง', 10, 15), U('กล่อง', 50, 65)], codes: [['2000000300014', 'กล่อง']],
-    lots: [['CZ2308', '2026-08-28', 120], ['CZ2503', '2027-09-30', 400]] },
-  { id: 'p-ome20', name: 'โอเมพราโซล 20', generic: 'Omeprazole', strength: '20 mg', form: 'แคปซูล', cat: 'ยาอันตราย', reorder: 60, w: 5,
-    units: [U('แคปซูล', 1, 3), U('แผง', 10, 25), U('กล่อง', 100, 220)], codes: [['2000000400011', 'กล่อง']],
-    lots: [['OM2410', '2026-10-31', 240], ['OM2505', '2028-04-30', 200]] },
-  { id: 'p-ors', name: 'ผงเกลือแร่ ORS', generic: 'Oral rehydration salts', strength: '3.3 g', form: 'ผง', cat: 'ยาสามัญประจำบ้าน', reorder: 30, w: 5,
-    units: [U('ซอง', 1, 5), U('กล่อง', 50, 220)], codes: [['2000000500018', 'กล่อง'], ['2000000500025', 'ซอง']],
-    lots: [['OR2411', '2026-11-30', 80]] },
-  { id: 'p-ibu400', name: 'ไอบูโพรเฟน 400', generic: 'Ibuprofen', strength: '400 mg', form: 'เม็ด', cat: 'ยาอันตราย', reorder: 80, w: 5,
-    units: [U('เม็ด', 1, 2), U('แผง', 10, 18), U('กล่อง', 100, 150)], codes: [['2000000600015', 'กล่อง']],
-    lots: [['IB2502', '2027-11-30', 400]] },
-  { id: 'p-lora10', name: 'ลอราทาดีน 10', generic: 'Loratadine', strength: '10 mg', form: 'เม็ด', cat: 'ยาอันตราย', reorder: 50, w: 4,
-    units: [U('เม็ด', 1, 3), U('แผง', 10, 25), U('กล่อง', 100, 200)], codes: [['2000000700012', 'กล่อง']],
-    lots: [['LR2504', '2028-03-31', 200]] },
-  { id: 'p-tram50', name: 'ทรามาดอล 50', generic: 'Tramadol HCl', strength: '50 mg', form: 'แคปซูล', cat: 'ยาควบคุมพิเศษ', reorder: 20, w: 1.2,
-    units: [U('แคปซูล', 1, 5), U('แผง', 10, 45), U('กล่อง', 100, 400)], codes: [['2000000800019', 'กล่อง']],
-    lots: [['TM2501', '2027-12-31', 120]] },
-  { id: 'p-calam', name: 'คาลาไมน์ โลชั่น', generic: 'Calamine lotion', strength: '60 ml', form: 'น้ำ', cat: 'ยาสามัญประจำบ้าน', reorder: 6, w: 2,
-    units: [U('ขวด', 1, 35), U('โหล', 12, 380)], codes: [['2000000900016', 'ขวด']],
-    lots: [['CL2506', '2028-05-31', 24]] },
-  { id: 'p-salb', name: 'ซาลบูทามอล สเปรย์พ่น', generic: 'Salbutamol', strength: '100 mcg/พัฟ', form: 'สเปรย์', cat: 'ยาอันตราย', reorder: 5, w: 1.6,
-    units: [U('หลอด', 1, 120)], codes: [['2000001000013', 'หลอด']],
-    lots: [['SB25K07', '2027-10-31', 10]] },
+const V1 = 'บริษัท ตัวอย่างฟาร์มา จำกัด-110001', V2 = 'บริษัท สมมติเฮลท์แคร์ จำกัด-110002', V3 = 'บริษัท เดโมเมดิคอล จำกัด-110003';
+const C7 = 'ทำคืนก่อนหมดอายุ 7 เดือน หากติดนับสต็อก ให้ทำคืนก่อนหมดอายุ 6 เดือน';
+const C5 = 'ทำคืนก่อนหมดอายุ 5 เดือน หากติดนับสต็อก ให้ทำคืนก่อนหมดอายุ 4 เดือน';
+const C3 = 'ทำคืนก่อนหมดอายุ 3 เดือน หากติดนับสต็อก ให้ทำคืนก่อนหมดอายุ 2 เดือน';
+const C0 = 'ทำคืนหมดอายุแล้ว';
+// [sku, name, vendor, class, condition, [[lot, expOffsetDays, qty, receivedDaysAgo, kind]]]
+const ITEMS = [
+  ['90000101', 'D_พาราเซตามอล 500 มก. 10X10 เม็ด', V1, 'OTC DRUGS', C7, [['PA2507A', 150, 12, 40, 'credit'], ['PA2601B', 520, 24, 10, 'credit']]],
+  ['90000102', 'D_ยาแก้ไอน้ำดำ 60 มล.', V1, 'OTC DRUGS', C7, [['CG2410', 200, 6, 55, 'credit']]],
+  ['90000103', 'S_D_เจลลดไข้ 120 มล.', V2, 'NON OTC DRUGS', C5, [['GL2503', 140, 3, 20, 'consignment']]],
+  ['90000104', 'D_ยาดมสมุนไพร 5 มล.', V2, 'NON OTC DRUGS', C5, [['HB2411', 30, 10, 90, 'consignment'], ['HB2507', 400, 20, 5, 'consignment']]],
+  ['90000105', 'กัมมี่วิตามินซี 20 ชิ้น', V3, 'DIETARY SUPPLEMENT', C3, [['GM2504', 110, 8, 30, 'credit']]],
+  ['90000106', 'แถบตรวจน้ำตาลในเลือด 50 ชิ้น', V3, 'MEDICAL DEVICE', C5, [['ST2502', 145, 4, 60, 'credit']]],
+  ['90000107', 'D_ผงเกลือแร่ 3.3 กรัม X50 ซอง', V1, 'OTC DRUGS', C7, [['OR2412', -12, 5, 120, 'credit']]],
+  ['90000108', 'วิตามินรวม 30 เม็ด', V3, 'VITAMINS AND MINERALS', C0, [['VT2506', 60, 6, 25, 'consignment']]],
+  ['90000109', 'S_D_ครีมทาแก้ผื่น 15 กรัม', V2, 'NON OTC DRUGS', C7, [['CR2505', 230, 9, 15, 'credit']]],
+  ['90000110', 'D_ยาหยอดตาน้ำตาเทียม 10 มล.', V1, 'NON OTC DRUGS', C3, [['EY2508', 700, 12, 7, 'credit']]],
 ];
-// sanity: all codes valid EAN-13
-for (const p of P) for (const [c] of p.codes) if (ean(c.slice(0, 12)) !== c) { p.codes = p.codes.map(([cc, u]) => [ean(cc.slice(0, 12)), u]); break; }
 
-const products = {};
-const lotIds = {};
-for (const p of P) {
-  const lots = {};
-  for (const [lot, exp] of p.lots) { const id = 'l-' + lot.toLowerCase(); lots[id] = { lot, exp, addedAt: '2026-08-25T02:00:00.000Z' }; lotIds[p.id + lot] = id; }
-  products[p.id] = { name: p.name, generic: p.generic, strength: p.strength, form: p.form, cat: p.cat, regNo: '', reorder: p.reorder,
-    units: p.units, codes: Object.fromEntries(p.codes), lots, sample: true };
+const products = {}, days = {}, rows = [];
+const nowISO = TODAY.toISOString();
+ITEMS.forEach(([sku, name, vendor, cls, cond, lots], i) => {
+  const code = ean(101 + i); const pid = 'p-' + code;
+  const rm = cond === C0 ? 0 : +cond.match(/(\d+) เดือน/)[1];
+  const p = products[pid] = { name, sku, codes: { [code]: 'ชิ้น' }, vendor, cls, returnCond: cond, returnMonths: rm, units: [{ name: 'ชิ้น', size: 1, price: 0 }], lots: {}, sample: true };
+  lots.forEach(([lot, expOff, qty, ago, kind], j) => {
+    const exp = addDays(expOff); const lotId = 'l-' + safeId(lot) + '-' + exp.replace(/-/g, '');
+    p.lots[lotId] = { lot, exp, addedAt: nowISO };
+    const recv = addDays(-ago); const [y, m, d] = recv.split('-').map(Number);
+    const e = { id: `m-s${i}-${j}`, at: new Date(y, m - 1, d, 9, 30).toISOString(), type: 'receive', kind, pid, lotId, qty, note: 'ข้อมูลตัวอย่าง', sample: true };
+    (days[recv] = days[recv] || { date: recv, entries: {} }).entries[e.id] = e;
+    rows.push([recv, code, sku, name, qty, lot, exp, vendor, cls, cond]);
+  });
+});
+// One lot of the first item was partly returned already, to show history.
+{ const k = addDays(-3); const e = { id: 'm-s-ret', at: new Date(2026, 8, 10, 15, 0).toISOString(), type: 'return', pid: 'p-' + ean(104), lotId: 'l-HB2411-' + addDays(30).replace(/-/g, ''), qty: -4, note: 'ใบคืนตัวอย่าง RT-001', sample: true };
+  (days[k] = days[k] || { date: k, entries: {} }).entries[e.id] = e; }
+
+const demo = { sample: true, codes: [
+  { label: 'พาราเซตามอล (EAN-13)', code: ean(101) },
+  { label: 'กัมมี่วิตามินซี', code: ean(105) },
+  { label: 'ยาดม (GS1 DataMatrix)', code: `010${ean(104)}17${addDays(400).slice(2).replace(/-/g, '')}<GS>10HB2507` },
+  { label: 'สินค้าที่ยังไม่มีในระบบ', code: ean(999) },
+] };
+
+mkdirSync(out, { recursive: true });
+writeFileSync(join(out, 'sample-backup.json'), JSON.stringify({ app: 'samut-khlang-ya', version: 2, exportedAt: nowISO, products, moves: days, meta: { demo } }));
+if (xlsxPath) {
+  const XLSX = createRequire(import.meta.url)(xlsxPath);
+  const toDMY = iso => { const [y, m, d] = iso.split('-'); return new Date(+y, +m - 1, +d); };
+  const aoa = [
+    ['แบบบันทึกการรับสินค้า และตรวจสอบวันหมดอายุ (Credit) — ข้อมูลตัวอย่าง'],
+    ['Date (DD/MM/YY)', 'Barcode', 'SKU', 'Description thai', 'Amount', 'Lot no.', 'EXP Date (DD/MM/YYYY)', 'Vendor Name', 'Class', ''],
+    ...rows.map(r => [toDMY(r[0]), r[1], r[2], r[3], r[4], r[5], toDMY(r[6]), r[7], r[8], r[9]]),
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(aoa, { cellDates: true, dateNF: 'dd/mm/yyyy' });
+  ws['!cols'] = [12, 16, 11, 38, 8, 12, 14, 34, 20, 60].map(wch => ({ wch }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Sc Credit');
+  XLSX.writeFile(wb, join(out, 'ตัวอย่างไฟล์รับสินค้า.xlsx'));
 }
-const receipts = [
-  { day: '2026-09-02', h: 10, pid: 'p-amox500', lot: 'AM2508', exp: '2028-07-31', unit: 'กล่อง', n: 2, cost: 180, note: 'บ.ตัวอย่างเภสัช · INV-0912' },
-  { day: '2026-09-08', h: 14, pid: 'p-para500', lot: 'P2601B', exp: '2028-01-31', unit: 'กล่อง', n: 5, cost: 55, note: 'บ.ตัวอย่างเภสัช · INV-0957' },
-  { day: '2026-09-11', h: 11, pid: 'p-ors', lot: 'OR2508', exp: '2028-08-31', unit: 'กล่อง', n: 2, cost: 150, note: 'ร้านส่งตัวอย่าง · 11/09' },
-];
-for (const r of receipts) { const id = 'l-' + r.lot.toLowerCase(); products[r.pid].lots[id] = { lot: r.lot, exp: r.exp, addedAt: `${r.day}T0${r.h - 7}:00:00.000Z` }; lotIds[r.pid + r.lot] = id; }
-
-const moves = [];
-let mseq = 0;
-const mid = () => 'm-s' + (++mseq).toString(36);
-const at = (day, h, m) => { const [y, mo, d] = day.split('-').map(Number); return new Date(y, mo - 1, d, h, m).toISOString(); };
-const unitOf = (pid, name) => P.find(p => p.id === pid).units.find(u => u.name === name);
-const stock = {}; // pid|lotId -> qty
-const add = e => { e.sample = true; moves.push(e); const k = e.pid + '|' + e.lotId; stock[k] = (stock[k] || 0) + e.qty; };
-
-for (const p of P) for (const [lot, , qty] of p.lots) {
-  const base = p.units[0];
-  add({ id: mid(), at: at('2026-08-25', 9, 0), type: 'opening', pid: p.id, lotId: lotIds[p.id + lot], qty, unit: base.name, unitQty: qty, unitPrice: 0, amount: 0, note: 'นับสต็อกตั้งต้น' });
-}
-const daysFrom = new Date(2026, 7, 26), today = new Date(2026, 8, 13);
-const totalW = P.reduce((s, p) => s + p.w, 0);
-const choose = () => { let r = rnd() * totalW; for (const p of P) { r -= p.w; if (r <= 0) return p; } return P[0]; };
-for (let d = new Date(daysFrom); d <= today; d.setDate(d.getDate() + 1)) {
-  const day = dayKey(d);
-  for (const r of receipts.filter(x => x.day === day)) {
-    const u = unitOf(r.pid, r.unit);
-    add({ id: mid(), at: at(day, r.h, 5), type: 'receive', pid: r.pid, lotId: lotIds[r.pid + r.lot], qty: r.n * u.size, unit: u.name, unitQty: r.n, unitPrice: r.cost, amount: r.n * r.cost, note: r.note });
-  }
-  if (day === '2026-09-05') add({ id: mid(), at: at(day, 19, 40), type: 'adjust', pid: 'p-ibu400', lotId: lotIds['p-ibu400IB2502'], qty: -3, unit: 'เม็ด', unitQty: -3, unitPrice: 0, amount: 0, note: 'นับสต็อกไม่ตรง' });
-  const isToday = day === dayKey(today);
-  const nBills = isToday ? 5 : 3 + Math.floor(rnd() * 4);
-  const times = Array.from({ length: nBills }, () => isToday ? 8.5 + rnd() * 3.2 : 8.5 + rnd() * 12).sort((a, b) => a - b);
-  let seq = 0;
-  for (const t of times) {
-    const bill = `B${day.replace(/-/g, '').slice(2)}-${pad(++seq)}`;
-    const when = at(day, Math.floor(t), Math.floor((t % 1) * 60));
-    const nLines = rnd() < 0.7 ? 1 : 2;
-    const used = new Set();
-    for (let i = 0; i < nLines; i++) {
-      const p = choose(); if (used.has(p.id)) continue; used.add(p.id);
-      const u = p.units.length < 3 ? p.units[0] : rnd() < 0.72 ? p.units[1] : rnd() < 0.8 ? p.units[0] : p.units[p.units.length - 1];
-      let n = u.size === 1 && p.units.length > 2 ? pick([2, 4, 6]) : u.size === 1 && p.units.length === 2 ? pick([1, 2, 3]) : rnd() < 0.8 ? 1 : 2;
-      if (u.size >= 50) n = 1;
-      let need = n * u.size;
-      const lots = Object.entries(products[p.id].lots).map(([id, l]) => ({ id, ...l, qty: stock[p.id + '|' + id] || 0 }))
-        .filter(l => l.qty > 0 && l.exp >= day).sort((a, b) => a.exp < b.exp ? -1 : 1);
-      if (lots.reduce((s, l) => s + l.qty, 0) < need) continue;
-      for (const l of lots) {
-        if (need <= 0) break; const take = Math.min(l.qty, need); need -= take;
-        const uq = take / u.size;
-        add({ id: mid(), at: when, type: 'sale', pid: p.id, lotId: l.id, qty: -take, unit: u.name, unitQty: uq, unitPrice: u.price, amount: uq * u.price, bill, note: '' });
-      }
-    }
-  }
-}
-
-const days = {};
-for (const m of moves) { const k = dayKey(new Date(m.at)); (days[k] = days[k] || { date: k, entries: {} }).entries[m.id] = m; }
-
-const demo = { codes: [
-  { label: 'กล่องพาราเซตามอล (EAN-13)', code: Object.keys(products['p-para500'].codes)[0] },
-  { label: 'แผงพาราเซตามอล', code: Object.keys(products['p-para500'].codes)[1] },
-  { label: 'ซาลบูทามอล (GS1 DataMatrix)', code: `010${Object.keys(products['p-salb'].codes)[0]}17271031<GS>10SB25K07<GS>21A7K2Q9` },
-  { label: 'ยาที่ยังไม่มีในคลัง', code: ean('200000999001') },
-], sample: true };
-
-for (const dir of ['products', 'moves', 'meta']) mkdirSync(join(out, dir), { recursive: true });
-for (const [id, p] of Object.entries(products)) writeFileSync(join(out, 'products', id + '.json'), JSON.stringify(p));
-for (const [id, d] of Object.entries(days)) writeFileSync(join(out, 'moves', id + '.json'), JSON.stringify(d));
-writeFileSync(join(out, 'meta', 'demo.json'), JSON.stringify(demo));
-writeFileSync(join(out, 'sample-backup.json'), JSON.stringify({ app: 'samut-khlang-ya', version: 1, exportedAt: new Date().toISOString(), products, moves: days, meta: { demo } }));
-
-const summary = {};
-for (const [k, q] of Object.entries(stock)) { const [pid] = k.split('|'); summary[pid] = (summary[pid] || 0) + q; }
-console.log('moves', moves.length, 'days', Object.keys(days).length);
-console.log(summary); console.log(stock);
-console.log(demo.codes.map(c => c.code));
+console.log('products', Object.keys(products).length, 'rows', rows.length, 'days', Object.keys(days).length);

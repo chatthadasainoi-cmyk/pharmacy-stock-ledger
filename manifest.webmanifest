@@ -1,0 +1,14 @@
+{
+  "name": "สมุดคลังยา",
+  "short_name": "คลังยา",
+  "description": "ตรวจวันหมดอายุ แยกสี และแจ้งเตือนกำหนดทำคืนสินค้าร้านยา",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EFF2EF",
+  "theme_color": "#0B6E55",
+  "lang": "th",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
