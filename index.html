@@ -1,0 +1,1344 @@
+<title>สมุดคลังยา</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#EFF2EF; --surface:#FFFFFF; --sunken:#E5EAE6; --ink:#15201C; --muted:#5B6863; --faint:#88948F;
+  --line:#D6DDD8; --line-strong:#B8C2BC;
+  --accent:#0B6E55; --accent-strong:#085843; --accent-ink:#FFFFFF; --accent-soft:#D8ECE4;
+  --stamp:#443C96; --stamp-soft:#E8E6F6;
+  --crit:#B42318; --crit-soft:#FBE3E0; --warn:#955800; --warn-soft:#FAEBCF; --low:#1F5A94; --low-soft:#DDE8F5; --ok:#2B7549; --ok-soft:#DCEFE2;
+  --scrim:rgba(14,24,20,.42); --shadow:0 18px 48px rgba(16,36,28,.18);
+  --font-body:"IBM Plex Sans Thai","Noto Sans Thai","Leelawadee UI",Tahoma,sans-serif;
+  --font-display:"Bai Jamjuree","IBM Plex Sans Thai","Leelawadee UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1412; --surface:#151D1A; --sunken:#1B2521; --ink:#E3EAE6; --muted:#98A69F; --faint:#6E7C76;
+    --line:#25302C; --line-strong:#374540;
+    --accent:#3DBB91; --accent-strong:#62CFA9; --accent-ink:#06231A; --accent-soft:#173A2F;
+    --stamp:#ADA6F2; --stamp-soft:#26233F;
+    --crit:#F28B7F; --crit-soft:#3A1D1A; --warn:#E3A84D; --warn-soft:#36280F; --low:#86B8EC; --low-soft:#172A3E; --ok:#78C99A; --ok-soft:#173222;
+    --scrim:rgba(0,0,0,.6); --shadow:0 18px 48px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1412; --surface:#151D1A; --sunken:#1B2521; --ink:#E3EAE6; --muted:#98A69F; --faint:#6E7C76;
+  --line:#25302C; --line-strong:#374540;
+  --accent:#3DBB91; --accent-strong:#62CFA9; --accent-ink:#06231A; --accent-soft:#173A2F;
+  --stamp:#ADA6F2; --stamp-soft:#26233F;
+  --crit:#F28B7F; --crit-soft:#3A1D1A; --warn:#E3A84D; --warn-soft:#36280F; --low:#86B8EC; --low-soft:#172A3E; --ok:#78C99A; --ok-soft:#173222;
+  --scrim:rgba(0,0,0,.6); --shadow:0 18px 48px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html,body{background:var(--ground)}
+body{margin:0;color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:var(--ink)}
+h1,h2,h3{font-family:var(--font-display);margin:0;line-height:1.25;text-wrap:balance}
+h1{font-size:26px;font-weight:600}
+h2{font-size:17px;font-weight:600}
+h3{font-size:15px;font-weight:600}
+p{margin:0}
+.mono{font-family:var(--font-mono)}
+.tnum,.mono,td,.fig-v{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:228px minmax(0,1fr);min-height:100vh}
+.rail{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:18px;padding:18px 12px;border-right:1px solid var(--line);background:var(--surface)}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 8px}
+.brand-mark{width:36px;height:36px;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.brand-name{font-family:var(--font-display);font-weight:700;font-size:18px;line-height:1.15}
+.brand-shop{font-size:12px;color:var(--muted);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:11px;width:100%;padding:9px 12px;border:0;border-radius:6px;background:transparent;color:var(--muted);font-weight:500;text-align:left;cursor:pointer}
+.nav button:hover{background:var(--sunken);color:var(--ink)}
+.nav button[aria-current="page"]{background:var(--accent-soft);color:var(--accent-strong);font-weight:600}
+.nav .count{margin-left:auto;font-family:var(--font-mono);font-size:12px;background:var(--crit-soft);color:var(--crit);border-radius:999px;padding:0 7px}
+.rail-foot{margin-top:auto;padding:10px 12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--faint);flex:none;margin-top:6px}
+.dot.on{background:var(--ok);box-shadow:0 0 0 3px var(--ok-soft)}
+.main{min-width:0;display:flex;flex-direction:column}
+
+.scanbar{position:sticky;top:0;z-index:30;padding:14px 28px 12px;background:var(--ground);border-bottom:1px solid var(--line)}
+.scanrow{display:flex;gap:10px;align-items:stretch;max-width:1240px}
+.scanfield{position:relative;flex:1;min-width:0;display:flex;align-items:stretch;background:var(--surface);border:1.5px solid var(--line-strong);border-radius:8px;height:52px}
+.scanfield:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.mode{display:flex;align-items:center;gap:8px;padding:0 14px;margin:4px;border-radius:5px;background:var(--accent);color:var(--accent-ink);font-family:var(--font-display);font-weight:600;font-size:14px;white-space:nowrap}
+#scanInput{flex:1;min-width:0;border:0;background:transparent;font-family:var(--font-mono);font-size:17px;padding:0 10px;outline:none}
+#scanInput::placeholder{font-family:var(--font-body);font-size:15px;color:var(--faint)}
+.scan-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:52px;padding:0 16px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--surface);cursor:pointer;font-weight:500;white-space:nowrap}
+.scan-btn:hover{border-color:var(--accent);color:var(--accent-strong)}
+.scanhint{display:flex;gap:14px;align-items:center;margin-top:7px;font-size:12.5px;color:var(--muted);max-width:1240px;flex-wrap:wrap}
+.scanhint .live{display:inline-flex;align-items:center;gap:6px}
+.scanhint .live .dot{margin:0}
+.suggest{position:absolute;left:-1.5px;right:-1.5px;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:var(--shadow);overflow:hidden;z-index:40}
+.suggest button{display:flex;width:100%;gap:12px;align-items:baseline;padding:10px 14px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left;cursor:pointer}
+.suggest button:first-child{border-top:0}
+.suggest button:hover,.suggest button.sel{background:var(--accent-soft)}
+
+.view{padding:22px 28px 90px;width:100%;max-width:1296px}
+.page-h{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.page-h p{color:var(--muted);margin-top:2px}
+.sec{margin-top:26px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
+
+.banner{display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap;margin:14px 28px 0;max-width:1240px;padding:10px 14px;border:1px dashed var(--stamp);border-radius:8px;background:var(--stamp-soft);color:var(--ink);font-size:13.5px}
+.banner b{color:var(--stamp)}
+.banner .grow{flex:1;min-width:220px}
+.demo-chip{border:1px solid var(--stamp);background:var(--surface);color:var(--stamp);border-radius:999px;padding:3px 11px;font-size:13px;cursor:pointer}
+.demo-chip:hover{background:var(--stamp);color:var(--surface)}
+
+/* ---------- controls ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 14px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);font-weight:500;cursor:pointer;white-space:nowrap;text-decoration:none}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.primary:hover{background:var(--accent-strong);border-color:var(--accent-strong)}
+.btn.danger{color:var(--crit);border-color:var(--crit)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.ghost:hover{color:var(--ink);background:var(--sunken)}
+.btn.sm{height:30px;padding:0 10px;font-size:13px}
+.btn.lg{height:48px;font-size:16px;padding:0 20px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.icon-btn{display:inline-grid;place-items:center;width:32px;height:32px;border:0;border-radius:6px;background:transparent;color:var(--muted);cursor:pointer}
+.icon-btn:hover{background:var(--sunken);color:var(--ink)}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field>label,.label{font-size:13px;color:var(--muted);font-weight:500}
+.field .help{font-size:12px;color:var(--faint)}
+input[type=text],input[type=number],input[type=date],input[type=search],select,textarea{width:100%;height:40px;padding:0 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface)}
+textarea{height:auto;padding:8px 10px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+input.mono{font-family:var(--font-mono)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:6px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:0 12px;height:34px;cursor:pointer;color:var(--muted);font-size:13.5px;border-left:1px solid var(--line)}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--ground);font-weight:600}
+
+/* ---------- data atoms ---------- */
+.lotchip{display:inline-flex;gap:9px;align-items:baseline;font-family:var(--font-mono);font-size:12px;color:var(--stamp);background:var(--stamp-soft);padding:1px 8px;border-radius:3px;white-space:nowrap;letter-spacing:.02em}
+.lotchip b{font-weight:600}
+.lotchip.crit{color:var(--crit);background:var(--crit-soft)}
+.lotchip.warn{color:var(--warn);background:var(--warn-soft)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:1px 9px;border-radius:999px;white-space:nowrap;background:var(--sunken);color:var(--muted)}
+.pill.crit{background:var(--crit-soft);color:var(--crit)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.low{background:var(--low-soft);color:var(--low)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.in{background:var(--ok-soft);color:var(--ok)}
+.pill.out{background:var(--sunken);color:var(--ink)}
+.pill.adj{background:var(--low-soft);color:var(--low)}
+.cat{font-size:12px;color:var(--muted);white-space:nowrap}
+.cat.ctrl{color:var(--crit);font-weight:600}
+.qty-plus{color:var(--ok)} .qty-minus{color:var(--ink)}
+.name{font-weight:600}
+.sub{color:var(--muted);font-size:13px}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse}
+th{font-size:12.5px;font-weight:500;color:var(--muted);text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--sunken)}
+td.r,th.r{text-align:right}
+.empty{padding:34px 20px;text-align:center;color:var(--muted)}
+.empty h3{color:var(--ink);margin-bottom:4px}
+
+/* ---------- home ---------- */
+.figs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.fig{padding:14px 18px;border-left:1px solid var(--line)}
+.fig:first-child{border-left:0}
+.fig-v{font-family:var(--font-display);font-size:26px;font-weight:600;line-height:1.2}
+.fig-k{font-size:13px;color:var(--muted)}
+.fig-v.crit{color:var(--crit)}
+.home-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px;align-items:start}
+.rows>.row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:center;width:100%;padding:11px 14px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left;cursor:pointer}
+.rows>.row:first-child{border-top:0}
+.rows>.row:hover{background:var(--sunken)}
+.row .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:2px}
+.row .end{text-align:right;font-size:13px}
+.chart svg{display:block;width:100%;height:auto}
+.chart .bar{fill:var(--accent);opacity:.5}
+.chart .bar.today{opacity:1}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .axis{fill:var(--muted);font-family:var(--font-mono);font-size:11px}
+.chart .val{fill:var(--ink);font-family:var(--font-mono);font-size:12px;font-weight:600}
+.feed .item{display:grid;grid-template-columns:48px auto minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:9px 14px;border-top:1px solid var(--line)}
+.feed .item:first-child{border-top:0}
+
+/* ---------- sale ---------- */
+.sale-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:22px;align-items:start}
+.bline{display:grid;grid-template-columns:minmax(0,1fr) 110px 128px 96px 32px;gap:12px;align-items:center;padding:13px 14px;border-top:1px solid var(--line)}
+.bline:first-child{border-top:0}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;align-items:center}
+.stepper{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;border:1px solid var(--line-strong);border-radius:6px;overflow:hidden;height:38px;background:var(--surface)}
+.stepper button{border:0;background:var(--sunken);cursor:pointer;font-size:18px;line-height:1}
+.stepper input{border:0;border-radius:0;height:100%;text-align:center;padding:0;font-family:var(--font-mono);-moz-appearance:textfield}
+.stepper input:focus{box-shadow:none}
+.stepper input::-webkit-inner-spin-button{-webkit-appearance:none}
+.bprice{text-align:right;font-family:var(--font-mono);font-weight:600}
+.summary{position:sticky;top:120px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:12px}
+.total .v{font-family:var(--font-display);font-size:32px;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ---------- receive ---------- */
+.rc-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
+.rc-form{padding:20px;display:flex;flex-direction:column;gap:16px}
+.picked{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:6px;background:var(--sunken)}
+.placeholder{padding:26px 18px;border:1.5px dashed var(--line-strong);border-radius:8px;text-align:center;color:var(--muted)}
+.gs1note{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--stamp)}
+
+/* ---------- filters ---------- */
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
+.filters .field{width:auto}
+.filters input[type=search]{width:240px}
+.filters input[type=date]{width:160px}
+.filters select{width:190px}
+.sumline{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);margin:0 0 10px}
+.sumline b{color:var(--ink);font-family:var(--font-mono)}
+
+/* ---------- drawer / modal ---------- */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:60}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(600px,100%);background:var(--surface);z-index:61;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.drawer-h{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid var(--line)}
+.drawer-b{overflow-y:auto;padding:16px 20px 40px;display:flex;flex-direction:column;gap:22px}
+.drawer-f{display:flex;gap:10px;justify-content:flex-end;padding:12px 20px;border-top:1px solid var(--line);background:var(--surface)}
+.kv{display:grid;grid-template-columns:130px minmax(0,1fr);gap:6px 14px;font-size:14px}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.editrows{display:flex;flex-direction:column;gap:8px}
+.editrow{display:grid;gap:8px;align-items:center}
+.editrow.units{grid-template-columns:minmax(0,1fr) 110px 110px 32px}
+.editrow.codes{grid-template-columns:minmax(0,1fr) 130px 32px}
+.modal-wrap{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:16px}
+.modal{position:relative;width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--surface);border-radius:10px;box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:14px}
+.modal .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+.label-sheet{background:#fff;color:#000;border:1px solid #ccc;border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;align-items:center}
+.label-sheet .ln{font-family:"IBM Plex Sans Thai",sans-serif;font-weight:600;font-size:14px;text-align:center}
+.label-sheet .lp{font-family:"IBM Plex Mono",monospace;font-size:13px}
+.label-sheet svg{width:240px;height:auto}
+
+.camera{position:fixed;inset:0;z-index:80;background:#0A0F0D;color:#E6ECE9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px}
+#reader{width:min(560px,100%);border-radius:10px;overflow:hidden;background:#000;min-height:220px}
+#reader video{display:block}
+.camera p{max-width:460px;text-align:center;color:#B9C6C0}
+.camera .btn{background:#1B2521;color:#E6ECE9;border-color:#374540}
+
+.toasts{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(520px,calc(100% - 24px))}
+.toast{background:var(--ink);color:var(--ground);padding:10px 16px;border-radius:8px;box-shadow:var(--shadow);font-size:14px;animation:tin .18s ease-out}
+.toast.err{background:var(--crit);color:#fff}
+@keyframes tin{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion: reduce){.toast{animation:none}}
+
+.tabbar{display:none}
+@media (max-width: 980px){
+  .sale-grid,.rc-grid,.home-grid{grid-template-columns:minmax(0,1fr)}
+  .summary{position:static}
+}
+@media (max-width: 760px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .rail{display:none}
+  .scanbar{padding:10px 12px 8px}
+  .scan-btn .t{display:none}
+  .scan-btn{padding:0 13px}
+  .mode{padding:0 10px;font-size:13px}
+  .banner{margin:10px 12px 0}
+  .view{padding:16px 12px 100px}
+  h1{font-size:22px}
+  .figs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fig:nth-child(3){border-left:0}
+  .fig:nth-child(n+3){border-top:1px solid var(--line)}
+  .grid3{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .bline{grid-template-columns:minmax(0,1fr) 110px;grid-template-areas:none}
+  .bline .bname{grid-column:1 / -1}
+  .filters input[type=search],.filters select,.filters input[type=date]{width:100%}
+  .filters .field{flex:1 1 140px}
+  .kv{grid-template-columns:110px minmax(0,1fr)}
+  .editrow.units{grid-template-columns:minmax(0,1fr) 70px 80px 32px}
+  .tabbar{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--surface);border-top:1px solid var(--line);padding:4px 2px calc(4px + env(safe-area-inset-bottom))}
+  .tabbar button{display:flex;flex-direction:column;align-items:center;gap:1px;border:0;background:transparent;color:var(--muted);font-size:11px;padding:5px 0;cursor:pointer}
+  .tabbar button[aria-current="page"]{color:var(--accent-strong);font-weight:600}
+}
+@media print{
+  body *{visibility:hidden}
+  #printArea,#printArea *{visibility:visible}
+  #printArea{position:fixed;left:0;top:0;border:0}
+}
+</style>
+
+<div class="app">
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 22 22"><g fill="currentColor"><rect x="2" y="4" width="2" height="14"/><rect x="5.5" y="4" width="1" height="14"/><rect x="8" y="4" width="3" height="14"/><rect x="12.5" y="4" width="1" height="14"/><rect x="15" y="4" width="2" height="14"/><rect x="18.5" y="4" width="1.5" height="14"/></g></svg>
+      </div>
+      <div><div class="brand-name">สมุดคลังยา</div><div class="brand-shop" id="shopName">ร้านยาของฉัน</div></div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="rail-foot"><span class="dot" id="storeDot"></span><span id="storeText">กำลังเชื่อมต่อข้อมูล…</span></div>
+  </aside>
+
+  <div class="main">
+    <header class="scanbar">
+      <form class="scanrow" id="scanForm" autocomplete="off">
+        <div class="scanfield">
+          <span class="mode" id="modeBadge">ดูข้อมูล</span>
+          <input id="scanInput" type="text" inputmode="text" enterkeyhint="go" spellcheck="false" placeholder="สแกนบาร์โค้ด หรือพิมพ์ชื่อยา / เลขบาร์โค้ด" aria-label="ช่องสแกนบาร์โค้ด">
+          <div class="suggest" id="suggest" hidden></div>
+        </div>
+        <button type="button" class="scan-btn" data-action="camera-open" title="สแกนด้วยกล้อง">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8v8M10 8v8M13.5 8v8M17 8v8"/></svg><span class="t">กล้อง</span>
+        </button>
+        <label class="scan-btn" title="ถ่ายรูปบาร์โค้ดแล้วอ่าน">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg><span class="t">ถ่ายรูป</span>
+          <input type="file" accept="image/*" capture="environment" id="photoInput" hidden>
+        </label>
+      </form>
+      <div class="scanhint"><span class="live"><span class="dot on"></span>พร้อมรับจากเครื่องสแกน USB</span><span id="scanHint">สแกนเพื่อดูข้อมูลยา ล็อต และประวัติ</span></div>
+    </header>
+    <div id="banner"></div>
+    <main class="view" id="view"><div class="empty">กำลังโหลดข้อมูล…</div></main>
+  </div>
+  <nav class="tabbar" id="tabbar"></nav>
+</div>
+
+<div id="drawerRoot"></div>
+<div id="modalRoot"></div>
+<div class="camera" id="camera" hidden>
+  <div id="reader"></div>
+  <p id="camMsg">กำลังเปิดกล้อง…</p>
+  <button class="btn" data-action="camera-close">ปิดกล้อง</button>
+</div>
+<div id="fileReaderBox" hidden></div>
+<input type="file" id="importInput" accept="application/json,.json" hidden>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+(() => {
+'use strict';
+
+/* ================= helpers ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const dayKey = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const todayKey = () => dayKey(new Date());
+const TH_M = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+const TH_D = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+const fmtExp = iso => { if (!iso) return '—'; const [y, m, d] = iso.split('-'); return `${d}/${m}/${y}`; };
+const fmtTime = iso => { const d = new Date(iso); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const fmtDate = iso => { const d = new Date(iso); return `${d.getDate()} ${TH_M[d.getMonth()]} ${d.getFullYear()}`; };
+const fmtDT = iso => `${fmtDate(iso)} ${fmtTime(iso)}`;
+const daysLeft = exp => { const [y, m, d] = exp.split('-').map(Number); const t = new Date(); t.setHours(0, 0, 0, 0); return Math.round((new Date(y, m - 1, d) - t) / 864e5); };
+const baht = n => '฿' + (Math.round((n || 0) * 100) / 100).toLocaleString('en-US', { maximumFractionDigits: 2 });
+const trimNum = n => String(Math.round(n * 100) / 100);
+const clone = o => JSON.parse(JSON.stringify(o ?? null));
+const ic = (d, s = 20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const ICON = {
+  home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  sale: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+  receive: '<path d="M21 8v8l-9 5-9-5V8l9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  stock: '<rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 12h18M9 4v16"/>',
+  ledger: '<path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+  x: '<path d="M6 6l12 12M18 6 6 18"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+};
+const CATS = ['ยาสามัญประจำบ้าน', 'ยาอันตราย', 'ยาควบคุมพิเศษ', 'ยาบรรจุเสร็จที่ไม่ใช่ยาอันตราย', 'เวชภัณฑ์ / อื่น ๆ'];
+const FORMS = ['เม็ด', 'แคปซูล', 'น้ำ', 'ผง', 'ครีม / ขี้ผึ้ง', 'สเปรย์', 'หยอด', 'อื่น ๆ'];
+const TYPES = {
+  opening: { label: 'ยอดยกมา', cls: 'in' },
+  receive: { label: 'รับเข้า', cls: 'in' },
+  sale: { label: 'ขาย', cls: 'out' },
+  void: { label: 'ยกเลิกบิล', cls: 'adj' },
+  adjust: { label: 'ปรับยอด', cls: 'adj' },
+  dispose: { label: 'ตัดทิ้ง', cls: 'out' },
+};
+const PAGES = [
+  { id: 'home', label: 'ภาพรวม', icon: 'home', mode: 'ดูข้อมูล', hint: 'สแกนเพื่อดูข้อมูลยา ล็อต และประวัติ' },
+  { id: 'sale', label: 'ขายยา', icon: 'sale', mode: 'ขาย', hint: 'สแกนเพื่อเพิ่มลงบิล — ระบบเลือกล็อตที่หมดอายุก่อนให้' },
+  { id: 'receive', label: 'รับยาเข้า', icon: 'receive', mode: 'รับเข้า', hint: 'สแกนกล่องที่รับเข้า — DataMatrix จะกรอก LOT/EXP ให้เอง' },
+  { id: 'stock', label: 'คลังยา', icon: 'stock', mode: 'ดูข้อมูล', hint: 'สแกนเพื่อเปิดข้อมูลยา' },
+  { id: 'ledger', label: 'ประวัติ', icon: 'ledger', mode: 'ดูข้อมูล', hint: 'สแกนเพื่อดูข้อมูลยา' },
+  { id: 'settings', label: 'ตั้งค่า', icon: 'settings', mode: 'ดูข้อมูล', hint: 'สแกนเพื่อดูข้อมูลยา' },
+];
+
+/* ================= state ================= */
+const S = {
+  ready: { products: false, moves: false },
+  products: {}, days: {}, meta: {},
+  page: 'home',
+  basket: [], saleNote: '',
+  receive: { pid: null, kind: 'receive', lot: '', exp: '', qty: '', unit: '', cost: '', note: '', fromScan: false },
+  stock: { q: '', cat: '', status: 'all' },
+  lg: { from: '', to: '', type: '', cat: '', q: '' },
+  drawer: null, modal: null, suggest: [], suggestSel: 0, busy: false,
+};
+let D = { moves: [], lotQty: {}, pQty: {}, codeIndex: {} };
+const settings = () => Object.assign({ shopName: 'ร้านยาของฉัน', nearDays: 90 }, S.meta.settings || {});
+
+/* ================= storage ================= */
+async function getCap(name) {
+  try { return (window.claude && typeof window.claude.use === 'function') ? await window.claude.use(name) : null; }
+  catch (e) { return null; }
+}
+function dbStore(db) {
+  return {
+    kind: 'db',
+    watch(col, cb) {
+      return db.collection(col).onSnapshot(s => {
+        const out = {}; s.docs.forEach(d => { if (d.exists) out[d.id] = d.data(); }); cb(out);
+      }, e => toast('การเชื่อมต่อข้อมูลขัดข้อง: ' + (e.message || e.code) + ' — ลองรีโหลดหน้า', 'err'));
+    },
+    set: (col, id, data) => db.doc(col + '/' + id).set(data),
+    update: (col, id, data) => db.doc(col + '/' + id).update(data),
+    del: (col, id) => db.doc(col + '/' + id).delete(),
+    async addEntries(day, entries) {
+      const ref = db.doc('moves/' + day); const snap = await ref.get();
+      if (snap.exists) await ref.update({ entries }); else await ref.set({ date: day, entries });
+    },
+  };
+}
+function localStore() {
+  const KEY = 'samut-khlang-ya:v1';
+  let data = { products: {}, moves: {}, meta: {} };
+  try { const raw = localStorage.getItem(KEY); if (raw) data = Object.assign(data, JSON.parse(raw)); } catch (e) { /* storage blocked */ }
+  const subs = {};
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { toast('บันทึกลงเบราว์เซอร์ไม่สำเร็จ — พื้นที่อาจเต็ม ให้สำรองข้อมูลเป็นไฟล์', 'err'); } };
+  const emit = col => (subs[col] || []).forEach(cb => cb(clone(data[col] || {})));
+  const merge = (a, b) => { for (const k of Object.keys(b)) { const v = b[k]; if (v && typeof v === 'object' && !Array.isArray(v) && a[k] && typeof a[k] === 'object' && !Array.isArray(a[k])) merge(a[k], v); else a[k] = v; } return a; };
+  return {
+    kind: 'local',
+    watch(col, cb) { (subs[col] = subs[col] || []).push(cb); setTimeout(() => cb(clone(data[col] || {})), 0); return () => {}; },
+    async set(col, id, doc) { (data[col] = data[col] || {})[id] = clone(doc); save(); emit(col); },
+    async update(col, id, part) { data[col] = data[col] || {}; data[col][id] = merge(data[col][id] || {}, clone(part)); save(); emit(col); },
+    async del(col, id) { if (data[col]) delete data[col][id]; save(); emit(col); },
+    async addEntries(day, entries) { data.moves[day] = merge(data.moves[day] || { date: day, entries: {} }, { entries: clone(entries) }); save(); emit('moves'); },
+  };
+}
+let Store = null;
+
+/* ================= derived data ================= */
+function compute() {
+  const moves = [];
+  for (const doc of Object.values(S.days)) for (const e of Object.values(doc.entries || {})) moves.push(e);
+  moves.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+  const lotQty = {}, pQty = {}, codeIndex = {};
+  for (const m of moves) { const k = m.pid + '|' + m.lotId; lotQty[k] = (lotQty[k] || 0) + m.qty; pQty[m.pid] = (pQty[m.pid] || 0) + m.qty; }
+  for (const [pid, p] of Object.entries(S.products)) for (const [code, unit] of Object.entries(p.codes || {})) codeIndex[normCode(code)] = { pid, unit };
+  D = { moves, lotQty, pQty, codeIndex };
+}
+const unitsOf = p => ((p && p.units && p.units.length) ? p.units : [{ name: 'หน่วย', size: 1, price: 0 }]).slice().sort((a, b) => a.size - b.size);
+const unitByName = (p, n) => unitsOf(p).find(u => u.name === n) || unitsOf(p)[0];
+function fmtQty(p, q) {
+  const us = unitsOf(p); if (!q) return '0 ' + us[0].name;
+  let r = Math.abs(q); const parts = [];
+  for (let i = us.length - 1; i >= 0; i--) { const n = Math.floor(r / us[i].size + 1e-9); if (n > 0) { parts.push(n + ' ' + us[i].name); r = Math.round((r - n * us[i].size) * 1000) / 1000; } }
+  if (r > 0) parts.push(trimNum(r) + ' ' + us[0].name);
+  return (q < 0 ? '−' : '') + parts.join(' ');
+}
+function lotsOf(pid) {
+  const p = S.products[pid]; if (!p) return [];
+  return Object.entries(p.lots || {}).map(([id, l]) => ({ id, lot: l.lot, exp: l.exp, qty: D.lotQty[pid + '|' + id] || 0 }))
+    .sort((a, b) => (a.exp < b.exp ? -1 : a.exp > b.exp ? 1 : 0));
+}
+function statusOf(pid) {
+  const p = S.products[pid]; const near = settings().nearDays;
+  const lots = lotsOf(pid).filter(l => l.qty > 0);
+  const expired = lots.filter(l => daysLeft(l.exp) < 0);
+  const nearLots = lots.filter(l => { const d = daysLeft(l.exp); return d >= 0 && d <= near; });
+  const total = D.pQty[pid] || 0;
+  const sellable = total - expired.reduce((s, l) => s + l.qty, 0);
+  const out = sellable <= 0;
+  const low = !out && (p.reorder || 0) > 0 && sellable <= p.reorder;
+  const nextLot = lots.find(l => daysLeft(l.exp) >= 0);
+  return { total, sellable, lots, expired, nearLots, out, low, nextLot };
+}
+function allocate(pid, base, prefLotId, reserved) {
+  let lots = lotsOf(pid).map(l => ({ ...l, qty: l.qty - (reserved[l.id] || 0) })).filter(l => l.qty > 0 && daysLeft(l.exp) >= 0);
+  if (prefLotId) lots = lots.filter(l => l.id === prefLotId).concat(lots.filter(l => l.id !== prefLotId));
+  const picks = []; let need = base;
+  for (const l of lots) { if (need <= 0) break; const take = Math.min(l.qty, need); picks.push({ lot: l, take }); need -= take; }
+  return { picks, short: Math.max(0, need) };
+}
+
+/* ================= barcode parsing ================= */
+const GS = '';
+function normCode(c) {
+  c = String(c).trim();
+  if (/^\d+$/.test(c)) { if (c.length === 14 && c[0] === '0') c = c.slice(1); if (c.length === 12) c = '0' + c; }
+  return c.toUpperCase();
+}
+const AI = { '00': [18], '01': [14], '02': [14], '10': [0, 20], '11': [6], '12': [6], '13': [6], '15': [6], '16': [6], '17': [6], '20': [2], '21': [0, 20], '22': [0, 20], '30': [0, 8], '37': [0, 8], '90': [0, 30], '91': [0, 90], '92': [0, 90], '93': [0, 90], '94': [0, 90], '95': [0, 90], '96': [0, 90], '97': [0, 90], '98': [0, 90], '99': [0, 90] };
+function parseGS1(s) {
+  const out = {};
+  s = s.replace(/^\][A-Za-z]\d/, '');
+  if (s[0] === GS) s = s.slice(1);
+  if (/^\(\d{2,4}\)/.test(s)) {
+    const re = /\((\d{2,4})\)([^(]*)/g; let m;
+    while ((m = re.exec(s))) out[m[1]] = m[2].split(GS).join('').trim();
+    return out;
+  }
+  s = s.replace(/\s+/g, '');
+  let i = 0;
+  while (i < s.length) {
+    const ai = s.substr(i, 2), spec = AI[ai];
+    if (!spec) break;
+    i += 2;
+    if (spec.length === 1) { out[ai] = s.substr(i, spec[0]); i += spec[0]; if (s[i] === GS) i++; }
+    else {
+      let j = s.indexOf(GS, i); const toEnd = j < 0; if (toEnd) j = s.length;
+      let v = s.slice(i, j);
+      if (toEnd) { const m = v.match(/^(.+?)(1[17])(\d{2})(0[1-9]|1[0-2])(\d{2})$/); if (m) { v = m[1]; out[m[2]] = m[3] + m[4] + m[5]; } }
+      out[ai] = v.slice(0, spec[1]); i = j + 1;
+    }
+  }
+  return out;
+}
+function gs1Date(s) {
+  if (!/^\d{6}$/.test(s)) return '';
+  const y = 2000 + +s.slice(0, 2), m = +s.slice(2, 4); let d = +s.slice(4, 6);
+  if (!d) d = new Date(y, m, 0).getDate();
+  return `${y}-${pad(m)}-${pad(d)}`;
+}
+function parseScan(raw) {
+  const s = raw.trim();
+  if (/^\]/.test(s) || s.includes(GS) || /^\(\d{2}\)/.test(s) || /^01\d{14}/.test(s)) {
+    const ai = parseGS1(s); const g = ai['01'] || ai['02'];
+    if (g && /^\d{14}$/.test(g)) return { raw, kind: 'gs1', key: normCode(g), code: g, lot: (ai['10'] || '').toUpperCase(), exp: gs1Date(ai['17'] || ''), serial: ai['21'] || '' };
+  }
+  const digits = s.replace(/\s/g, '');
+  if (/^\d{8,14}$/.test(digits)) return { raw, kind: 'ean', key: normCode(digits), code: digits, lot: '', exp: '' };
+  const up = s.toUpperCase();
+  if (/^[A-Z0-9\-.]{4,}$/.test(up) && (D.codeIndex[up] || /\d/.test(up))) return { raw, kind: 'code', key: up, code: up, lot: '', exp: '' };
+  return null;
+}
+const eanCheck = d12 => { let s = 0; for (let i = 0; i < 12; i++) s += +d12[i] * (i % 2 ? 3 : 1); return (10 - (s % 10)) % 10; };
+function newStoreCode() {
+  for (;;) { const b = '20' + String(Math.floor(Math.random() * 1e10)).padStart(10, '0'); const c = b + eanCheck(b); if (!D.codeIndex[c]) return c; }
+}
+function ean13Svg(code) {
+  if (!/^\d{13}$/.test(code)) return '';
+  const L = ['0001101', '0011001', '0010011', '0111101', '0100011', '0110001', '0101111', '0111011', '0110111', '0001011'];
+  const G = ['0100111', '0110011', '0011011', '0100001', '0011101', '0111001', '0000101', '0010001', '0001001', '0010111'];
+  const R = ['1110010', '1100110', '1101100', '1000010', '1011100', '1001110', '1010000', '1000100', '1001000', '1110100'];
+  const P = ['LLLLLL', 'LLGLGG', 'LLGGLG', 'LLGGGL', 'LGLLGG', 'LGGLLG', 'LGGGLL', 'LGLGLG', 'LGLGGL', 'LGGLGL'];
+  const d = code.split('').map(Number);
+  let bits = '101';
+  for (let i = 1; i <= 6; i++) bits += (P[d[0]][i - 1] === 'L' ? L : G)[d[i]];
+  bits += '01010';
+  for (let i = 7; i <= 12; i++) bits += R[d[i]];
+  bits += '101';
+  const m = 2, q = 20, h = 64, W = q * 2 + 95 * m;
+  let rects = '';
+  for (let i = 0; i < bits.length; i++) if (bits[i] === '1') { const guard = i < 3 || (i >= 45 && i < 50) || i >= 92; rects += `<rect x="${q + i * m}" y="0" width="${m}" height="${guard ? h + 8 : h}"/>`; }
+  return `<svg viewBox="0 0 ${W} ${h + 22}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="บาร์โค้ด ${code}"><rect width="${W}" height="${h + 22}" fill="#fff"/><g fill="#000">${rects}</g><g fill="#000" font-family="IBM Plex Mono, monospace" font-size="14" text-anchor="middle"><text x="${q - 9}" y="${h + 18}">${d[0]}</text><text x="${q + 24 * m}" y="${h + 18}">${code.slice(1, 7)}</text><text x="${q + 70 * m}" y="${h + 18}">${code.slice(7)}</text></g></svg>`;
+}
+
+/* ================= writes ================= */
+async function record(entries) {
+  const byDay = {};
+  for (const e of entries) { const k = dayKey(new Date(e.at)); (byDay[k] = byDay[k] || {})[e.id] = e; }
+  for (const [k, ents] of Object.entries(byDay)) await Store.addEntries(k, ents);
+}
+function errText(e) {
+  if (e && e.code === 'quota_exceeded') return 'ฐานข้อมูลเต็ม — สำรองข้อมูลเป็นไฟล์แล้วลบข้อมูลตัวอย่างหรือยาที่ไม่ใช้';
+  if (e && e.code === 'resource_exhausted') return 'บันทึกถี่เกินไป รอสักครู่แล้วลองอีกครั้ง';
+  return 'บันทึกไม่สำเร็จ: ' + ((e && (e.message || e.code)) || e);
+}
+async function safe(fn) {
+  if (S.busy) return; S.busy = true;
+  try { await fn(); } catch (e) { console.error(e); toast(errText(e), 'err'); } finally { S.busy = false; }
+}
+
+/* ================= UI atoms ================= */
+function toast(msg, kind) {
+  const el = document.createElement('div'); el.className = 'toast' + (kind === 'err' ? ' err' : ''); el.textContent = msg;
+  $('#toasts').appendChild(el); setTimeout(() => el.remove(), kind === 'err' ? 5200 : 2800);
+}
+function lotChip(l, withStatus) {
+  let cls = '';
+  if (withStatus) { const d = daysLeft(l.exp); cls = d < 0 ? ' crit' : d <= settings().nearDays ? ' warn' : ''; }
+  return `<span class="lotchip${cls}"><span>LOT <b>${esc(l.lot)}</b></span><span>EXP <b>${fmtExp(l.exp)}</b></span></span>`;
+}
+function expText(exp) {
+  const d = daysLeft(exp);
+  if (d < 0) return `<span class="pill crit">หมดอายุแล้ว ${-d} วัน</span>`;
+  if (d <= settings().nearDays) return `<span class="pill warn">อีก ${d} วันหมดอายุ</span>`;
+  return `<span class="pill ok">อีก ${Math.round(d / 30)} เดือน</span>`;
+}
+const catCls = c => c === 'ยาควบคุมพิเศษ' ? 'cat ctrl' : 'cat';
+const pSub = p => [p.generic, p.strength].filter(Boolean).map(esc).join(' · ');
+const unitOptions = (p, sel) => unitsOf(p).map(u => `<option value="${esc(u.name)}"${u.name === sel ? ' selected' : ''}>${esc(u.name)}${u.size > 1 ? ` (${u.size} ${esc(unitsOf(p)[0].name)})` : ''}</option>`).join('');
+function statusPill(st) {
+  if (st.expired.length) return '<span class="pill crit">มียาหมดอายุค้าง</span>';
+  if (st.out) return '<span class="pill crit">หมดสต็อก</span>';
+  if (st.nearLots.length) return '<span class="pill warn">ใกล้หมดอายุ</span>';
+  if (st.low) return '<span class="pill low">ใกล้หมด</span>';
+  return '<span class="pill ok">ปกติ</span>';
+}
+function attentionItems() {
+  const items = [];
+  for (const pid of Object.keys(S.products)) {
+    const st = statusOf(pid);
+    st.expired.forEach(l => items.push({ sev: 0, pid, lot: l, d: daysLeft(l.exp) }));
+    st.nearLots.forEach(l => items.push({ sev: 1, pid, lot: l, d: daysLeft(l.exp) }));
+    if (st.out || st.low) items.push({ sev: 2, pid, st });
+  }
+  return items.sort((a, b) => a.sev - b.sev || (a.d ?? 0) - (b.d ?? 0));
+}
+
+/* ================= rendering ================= */
+function render() {
+  const ae = document.activeElement; const fid = ae && ae.id && ae.id !== 'scanInput' ? ae.id : null;
+  let ss = null, se = null; try { ss = ae.selectionStart; se = ae.selectionEnd; } catch (e) { /* not a text input */ }
+  renderChrome();
+  const ready = S.ready.products && S.ready.moves;
+  $('#view').innerHTML = ready ? VIEWS[S.page]() : '<div class="empty">กำลังโหลดข้อมูล…</div>';
+  renderBanner(); renderDrawer(); renderModal();
+  if (fid) { const el = document.getElementById(fid); if (el && el !== document.activeElement) { el.focus(); try { if (ss != null) el.setSelectionRange(ss, se); } catch (e) { /* ignore */ } } }
+}
+function renderChrome() {
+  const att = S.ready.moves ? attentionItems().filter(i => i.sev < 2).length : 0;
+  const navHtml = PAGES.map(p => `<button data-action="go" data-page="${p.id}"${S.page === p.id ? ' aria-current="page"' : ''}>${ic(ICON[p.icon])}<span>${p.label}</span>${p.id === 'stock' && att ? `<span class="count">${att}</span>` : ''}</button>`).join('');
+  $('#nav').innerHTML = navHtml;
+  $('#tabbar').innerHTML = PAGES.map(p => `<button data-action="go" data-page="${p.id}"${S.page === p.id ? ' aria-current="page"' : ''}>${ic(ICON[p.icon], 22)}<span>${p.label}</span></button>`).join('');
+  const pg = PAGES.find(p => p.id === S.page);
+  $('#modeBadge').textContent = pg.mode; $('#scanHint').textContent = pg.hint;
+  $('#shopName').textContent = settings().shopName;
+}
+function renderBanner() {
+  const hasSample = Object.values(S.products).some(p => p.sample);
+  if (!hasSample) { $('#banner').innerHTML = ''; return; }
+  const demo = (S.meta.demo && S.meta.demo.codes) || [];
+  $('#banner').innerHTML = `<div class="banner"><div class="grow"><b>ข้อมูลตัวอย่าง</b> — ยา ล็อต และการขายในหน้านี้เป็นตัวอย่างสำหรับลองใช้ ไม่ใช่ข้อมูลร้านจริง${demo.length ? ' · ลองจำลองการสแกน:' : ''}</div>
+    ${demo.map((d, i) => `<button class="demo-chip" data-action="demo-scan" data-i="${i}" title="${esc(d.code)}">${esc(d.label)}</button>`).join('')}
+    <button class="btn sm ghost" data-action="clear-sample">ลบข้อมูลตัวอย่าง</button></div>`;
+}
+
+/* ---------- home ---------- */
+function viewHome() {
+  const tk = todayKey();
+  const today = D.moves.filter(m => dayKey(new Date(m.at)) === tk);
+  const voided = new Set(today.filter(m => m.type === 'void').map(m => m.bill));
+  const sales = today.filter(m => m.type === 'sale').reduce((s, m) => s + (m.amount || 0), 0) - today.filter(m => m.type === 'void').reduce((s, m) => s + (m.amount || 0), 0);
+  const bills = new Set(today.filter(m => m.type === 'sale' && !voided.has(m.bill)).map(m => m.bill)).size;
+  const items = attentionItems();
+  const urgent = items.filter(i => i.sev < 2).length;
+  const inStock = Object.keys(S.products).filter(pid => (D.pQty[pid] || 0) > 0).length;
+  const now = new Date();
+  const rows = items.slice(0, 12).map(it => {
+    const p = S.products[it.pid];
+    let lead, meta, end;
+    if (it.sev < 2) {
+      lead = it.sev === 0 ? '<span class="pill crit">หมดอายุ</span>' : '<span class="pill warn">ใกล้หมดอายุ</span>';
+      meta = lotChip(it.lot, true);
+      end = `<div class="tnum">${esc(fmtQty(p, it.lot.qty))}</div><div class="muted">${it.d < 0 ? `เลยมา ${-it.d} วัน` : `อีก ${it.d} วัน`}</div>`;
+    } else {
+      lead = it.st.out ? '<span class="pill crit">หมดสต็อก</span>' : '<span class="pill low">ใกล้หมด</span>';
+      meta = `<span class="sub">จุดสั่งซื้อ ${esc(fmtQty(p, p.reorder))}</span>`;
+      end = `<div class="tnum">เหลือ ${esc(fmtQty(p, Math.max(0, it.st.sellable)))}</div><div class="muted">ที่ขายได้</div>`;
+    }
+    return `<button class="row" data-action="open-product" data-pid="${esc(it.pid)}">${lead}<div><div class="name">${esc(p.name)}</div><div class="meta">${meta}</div></div><div class="end">${end}</div></button>`;
+  }).join('');
+  const feed = D.moves.slice(0, 10).map(m => {
+    const p = S.products[m.pid]; if (!p) return '';
+    const l = (p.lots || {})[m.lotId];
+    return `<div class="item"><span class="mono small muted">${dayKey(new Date(m.at)) === tk ? fmtTime(m.at) : fmtDate(m.at).replace(/ \d{4}$/, '')}</span><span class="pill ${TYPES[m.type].cls}">${TYPES[m.type].label}</span><div style="min-width:0"><div class="name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}</div>${l ? `<div class="small muted mono">LOT ${esc(l.lot)}</div>` : ''}</div><span class="mono small ${m.qty > 0 ? 'qty-plus' : 'qty-minus'}">${m.qty > 0 ? '+' : ''}${esc(fmtQty(p, m.qty))}</span></div>`;
+  }).join('');
+  return `
+  <div class="page-h"><div><h1>ภาพรวมวันนี้</h1><p>วัน${TH_D[now.getDay()]}ที่ ${fmtDate(now.toISOString())}</p></div>
+    <div class="actions"><button class="btn primary" data-action="go" data-page="sale">${ic(ICON.sale, 18)}เปิดบิลขาย</button><button class="btn" data-action="go" data-page="receive">${ic(ICON.receive, 18)}รับยาเข้า</button></div></div>
+  <div class="figs">
+    <div class="fig"><div class="fig-v">${baht(sales)}</div><div class="fig-k">ยอดขายวันนี้</div></div>
+    <div class="fig"><div class="fig-v">${bills}</div><div class="fig-k">บิลวันนี้</div></div>
+    <div class="fig"><div class="fig-v${urgent ? ' crit' : ''}">${urgent}</div><div class="fig-k">ล็อตหมดอายุ / ใกล้หมดอายุ</div></div>
+    <div class="fig"><div class="fig-v">${inStock}<span class="muted" style="font-size:16px"> / ${Object.keys(S.products).length}</span></div><div class="fig-k">รายการยาที่มีของ</div></div>
+  </div>
+  <div class="home-grid sec">
+    <section><div class="sec-h"><h2>ต้องจัดการ</h2><span class="small muted">เตือนล่วงหน้า ${settings().nearDays} วันก่อนหมดอายุ</span></div>
+      <div class="panel rows">${rows || '<div class="empty"><h3>ไม่มีอะไรค้าง</h3>ทุกล็อตยังไม่ใกล้หมดอายุและสต็อกเพียงพอ</div>'}</div>
+      ${items.length > 12 ? `<div style="margin-top:8px"><button class="btn sm ghost" data-action="go" data-page="stock">ดูทั้งหมด ${items.length} รายการในคลังยา</button></div>` : ''}
+    </section>
+    <section style="display:flex;flex-direction:column;gap:26px">
+      <div><div class="sec-h"><h2>ยอดขาย 14 วัน</h2><span class="small muted">หักบิลที่ยกเลิกแล้ว</span></div><div class="panel chart" style="padding:12px 12px 6px">${salesChart()}</div></div>
+      <div><div class="sec-h"><h2>เคลื่อนไหวล่าสุด</h2><button class="btn sm ghost" data-action="go" data-page="ledger">ประวัติทั้งหมด</button></div>
+        <div class="panel feed">${feed || '<div class="empty">ยังไม่มีรายการ — สแกนยาเพื่อรับเข้าหรือขาย</div>'}</div></div>
+    </section>
+  </div>`;
+}
+function salesChart() {
+  const days = []; for (let i = 13; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); days.push(d); }
+  const keys = days.map(dayKey); const sums = Object.fromEntries(keys.map(k => [k, 0]));
+  for (const m of D.moves) { const k = dayKey(new Date(m.at)); if (k in sums) { if (m.type === 'sale') sums[k] += m.amount || 0; if (m.type === 'void') sums[k] -= m.amount || 0; } }
+  const vals = keys.map(k => Math.max(0, sums[k]));
+  const mx = Math.max(...vals, 1); const e = Math.pow(10, Math.floor(Math.log10(mx))); const f = mx / e;
+  const top = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * e;
+  const W = 560, H = 190, L = 54, Rp = 8, T = 22, B = 24, cw = (W - L - Rp) / 14, bw = cw * 0.6, ch = H - T - B;
+  const y = v => T + (1 - v / top) * ch;
+  let g = '';
+  [0, top / 2, top].forEach(v => { g += `<line class="grid" x1="${L}" x2="${W - Rp}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${baht(v)}</text>`; });
+  vals.forEach((v, i) => {
+    const x = L + i * cw + (cw - bw) / 2, h = Math.max(v > 0 ? 2 : 0, (v / top) * ch);
+    g += `<rect class="bar${i === 13 ? ' today' : ''}" x="${x}" y="${T + ch - h}" width="${bw}" height="${h}" rx="2"><title>${fmtDate(days[i].toISOString())}: ${baht(v)}</title></rect>`;
+    if (i % 2 === 1 || i === 13) g += `<text class="axis" x="${x + bw / 2}" y="${H - 6}" text-anchor="middle">${i === 13 ? 'วันนี้' : days[i].getDate()}</text>`;
+  });
+  g += `<text class="val" x="${L + 13 * cw + cw / 2}" y="${y(vals[13]) - 7}" text-anchor="end">${baht(vals[13])}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="กราฟยอดขาย 14 วัน">${g}</svg>`;
+}
+
+/* ---------- sale ---------- */
+function basketCalc() {
+  const reserved = {};
+  return S.basket.map((ln, i) => {
+    const p = S.products[ln.pid]; if (!p) return null;
+    const u = unitByName(p, ln.unit); const base = u.size * ln.qty;
+    const al = allocate(ln.pid, base, ln.lotPref, reserved);
+    al.picks.forEach(pk => { reserved[pk.lot.id] = (reserved[pk.lot.id] || 0) + pk.take; });
+    return { ln, i, p, u, base, al, price: (u.price || 0) * ln.qty };
+  }).filter(Boolean);
+}
+function billsToday() {
+  const tk = todayKey(); const map = {};
+  for (const m of D.moves) {
+    if (!m.bill || dayKey(new Date(m.at)) !== tk && m.type === 'sale') continue;
+    const b = map[m.bill] = map[m.bill] || { bill: m.bill, at: m.at, total: 0, lines: 0, voided: false, today: false };
+    if (m.type === 'sale') { b.total += m.amount || 0; b.lines++; b.at = m.at < b.at ? m.at : b.at; if (dayKey(new Date(m.at)) === tk) b.today = true; }
+    if (m.type === 'void') b.voided = true;
+  }
+  return Object.values(map).filter(b => b.today).sort((a, b) => (a.at < b.at ? 1 : -1));
+}
+function viewSale() {
+  const lines = basketCalc();
+  const total = lines.reduce((s, l) => s + l.price, 0);
+  const short = lines.some(l => l.al.short > 0);
+  const list = lines.map(({ ln, i, p, u, al, price }) => `
+    <div class="bline">
+      <div class="bname"><div class="name">${esc(p.name)} <span class="${catCls(p.cat)}">${esc(p.cat || '')}</span></div><div class="sub">${pSub(p)}</div>
+        <div class="picks">${al.picks.map(pk => `${lotChip(pk.lot, true)}<span class="small mono muted">×${esc(fmtQty(p, pk.take))}</span>`).join('')}
+        ${al.short ? `<span class="pill crit">ขาดอีก ${esc(fmtQty(p, al.short))}</span>` : ''}${ln.lotPref && al.picks.length ? '<span class="small muted">ตามล็อตที่สแกน</span>' : ''}</div></div>
+      <select id="bu-${i}" data-change="basket-unit" data-i="${i}" aria-label="หน่วย">${unitOptions(p, u.name)}</select>
+      <div class="stepper"><button data-action="basket-step" data-i="${i}" data-d="-1" aria-label="ลด">−</button><input id="bq-${i}" type="number" min="1" step="1" value="${ln.qty}" data-change="basket-qty" data-i="${i}" aria-label="จำนวน"><button data-action="basket-step" data-i="${i}" data-d="1" aria-label="เพิ่ม">+</button></div>
+      <div class="bprice">${baht(price)}<div class="small muted" style="font-weight:400">${baht(u.price)}/${esc(u.name)}</div></div>
+      <button class="icon-btn" data-action="basket-remove" data-i="${i}" aria-label="เอาออก">${ic(ICON.x, 18)}</button>
+    </div>`).join('');
+  const bills = billsToday().slice(0, 12).map(b => `<tr><td class="mono">${esc(b.bill)}</td><td class="mono">${fmtTime(b.at)}</td><td class="r">${b.lines}</td><td class="r mono">${baht(b.total)}</td><td class="r">${b.voided ? '<span class="pill adj">ยกเลิกแล้ว</span>' : `<button class="btn sm ghost" data-action="void-bill" data-bill="${esc(b.bill)}">ยกเลิกบิล</button>`}</td></tr>`).join('');
+  return `
+  <div class="page-h"><div><h1>ขายยา</h1><p>สแกนหรือพิมพ์ชื่อยาในแถบด้านบน ระบบหยิบล็อตที่หมดอายุก่อน (FEFO) และข้ามล็อตที่หมดอายุแล้ว</p></div></div>
+  <div class="sale-grid">
+    <section class="panel">${list || `<div class="empty" style="padding:48px 20px"><h3>บิลยังว่าง</h3>ยิงเครื่องสแกนที่กล่องหรือแผงยา แล้วรายการจะเข้ามาที่นี่</div>`}</section>
+    <aside class="panel summary">
+      <div class="small muted">${lines.length} รายการ</div>
+      <div class="field"><label for="sale-note">ผู้ซื้อ / หมายเหตุ</label><input id="sale-note" type="text" data-bind="saleNote" value="${esc(S.saleNote)}" placeholder="เช่น ชื่อผู้ซื้อยาอันตราย อาการ"></div>
+      <div class="total"><span class="muted">รวม</span><span class="v">${baht(total)}</span></div>
+      ${short ? '<div class="small" style="color:var(--crit)">มียาที่สต็อกไม่พอ ลดจำนวนหรือรับยาเข้าก่อน</div>' : ''}
+      <button class="btn primary lg" data-action="commit-sale"${!lines.length || short ? ' disabled' : ''}>บันทึกการขาย</button>
+      ${lines.length ? '<button class="btn ghost" data-action="basket-clear">ล้างบิล</button>' : ''}
+    </aside>
+  </div>
+  <section class="sec"><div class="sec-h"><h2>บิลวันนี้</h2></div>
+    ${bills ? `<div class="tablewrap"><table><thead><tr><th>เลขบิล</th><th>เวลา</th><th class="r">รายการ</th><th class="r">ยอด</th><th></th></tr></thead><tbody>${bills}</tbody></table></div>` : '<div class="panel empty">ยังไม่มีบิลวันนี้</div>'}
+  </section>`;
+}
+function addToBasket(pid, unit, lotPref) {
+  const p = S.products[pid];
+  const u = unit ? unitByName(p, unit) : unitsOf(p)[Math.min(1, unitsOf(p).length - 1)];
+  const ex = S.basket.find(b => b.pid === pid && b.unit === u.name && (b.lotPref || null) === (lotPref || null));
+  if (ex) ex.qty++; else S.basket.push({ pid, unit: u.name, qty: 1, lotPref: lotPref || null });
+}
+async function commitSale() {
+  const lines = basketCalc();
+  if (!lines.length || lines.some(l => l.al.short > 0)) return;
+  const tk = todayKey(); const seq = new Set(D.moves.filter(m => m.bill && m.bill.startsWith('B' + tk.replace(/-/g, '').slice(2))).map(m => m.bill)).size + 1;
+  const bill = `B${tk.replace(/-/g, '').slice(2)}-${pad(seq)}`;
+  const at = new Date().toISOString(); const entries = [];
+  for (const { ln, p, u, al } of lines) for (const pk of al.picks) {
+    const unitQty = pk.take / u.size;
+    entries.push({ id: uid('m'), at, type: 'sale', pid: ln.pid, lotId: pk.lot.id, qty: -pk.take, unit: u.name, unitQty, unitPrice: u.price || 0, amount: unitQty * (u.price || 0), bill, note: S.saleNote.trim() });
+  }
+  await record(entries);
+  const total = lines.reduce((s, l) => s + l.price, 0);
+  S.basket = []; S.saleNote = '';
+  toast(`บันทึกบิล ${bill} แล้ว · ${baht(total)}`); render();
+}
+
+/* ---------- receive ---------- */
+function viewReceive() {
+  const R = S.receive; const p = R.pid && S.products[R.pid];
+  const recent = D.moves.filter(m => m.type === 'receive' || m.type === 'opening').slice(0, 12).map(m => {
+    const pp = S.products[m.pid]; if (!pp) return ''; const l = (pp.lots || {})[m.lotId];
+    return `<div class="item" style="grid-template-columns:minmax(0,1fr) auto"><div><div class="name">${esc(pp.name)}</div><div class="meta" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:2px">${l ? lotChip({ lot: l.lot, exp: l.exp }) : ''}<span class="small muted">${fmtDT(m.at)}</span></div></div><span class="mono small qty-plus">+${esc(fmtQty(pp, m.qty))}</span></div>`;
+  }).join('');
+  let form;
+  if (!p) {
+    form = `<div class="placeholder">${ic(ICON.receive, 28)}<h3 style="color:var(--ink);margin:6px 0 2px">สแกนกล่องยาที่รับเข้า</h3>หรือพิมพ์ชื่อยาในแถบด้านบน · ยาที่ยังไม่มีในระบบจะเปิดฟอร์มเพิ่มยาให้</div>`;
+  } else {
+    const lots = lotsOf(R.pid);
+    const u = unitByName(p, R.unit);
+    const qn = Number(R.qty) || 0;
+    form = `
+      <div class="picked"><div><div class="name">${esc(p.name)}</div><div class="sub">${pSub(p)} · คงเหลือ ${esc(fmtQty(p, D.pQty[R.pid] || 0))}</div></div><button class="icon-btn" data-action="receive-clear" aria-label="เปลี่ยนยา">${ic(ICON.x, 18)}</button></div>
+      <div class="field"><span class="label">ประเภทรายการ</span><div class="seg"><button data-action="receive-kind" data-kind="receive" aria-pressed="${R.kind === 'receive'}">รับจากผู้จำหน่าย</button><button data-action="receive-kind" data-kind="opening" aria-pressed="${R.kind === 'opening'}">ยอดยกมา (ตั้งต้น)</button></div></div>
+      ${R.fromScan ? `<div class="gs1note">${ic('<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2z"/>', 16)}LOT และ EXP อ่านจาก DataMatrix — ตรวจกับกล่องอีกครั้ง</div>` : ''}
+      <div class="grid2">
+        <div class="field"><label for="rc-lot">เลขล็อต (LOT)</label><input id="rc-lot" class="mono" type="text" list="lotlist" data-bind="receive.lot" data-change="receive-lot" value="${esc(R.lot)}" placeholder="เช่น A2507B" autocapitalize="characters"><datalist id="lotlist">${lots.map(l => `<option value="${esc(l.lot)}">EXP ${fmtExp(l.exp)}</option>`).join('')}</datalist></div>
+        <div class="field"><label for="rc-exp">วันหมดอายุ (EXP)</label><input id="rc-exp" type="date" data-bind="receive.exp" value="${esc(R.exp)}"><span class="help">ถ้ากล่องมีแค่เดือน/ปี ให้เลือกวันสุดท้ายของเดือน</span></div>
+      </div>
+      <div class="grid3">
+        <div class="field"><label for="rc-qty">จำนวน</label><input id="rc-qty" class="mono" type="number" min="0" step="1" inputmode="numeric" data-bind="receive.qty" data-live="rc-sum" value="${esc(R.qty)}"></div>
+        <div class="field"><label for="rc-unit">หน่วย</label><select id="rc-unit" data-bind="receive.unit" data-change="rerender">${unitOptions(p, u.name)}</select></div>
+        <div class="field"><label for="rc-cost">ทุนต่อ${esc(u.name)} (฿)</label><input id="rc-cost" class="mono" type="number" min="0" step="0.01" inputmode="decimal" data-bind="receive.cost" data-live="rc-sum" value="${esc(R.cost)}"></div>
+      </div>
+      <div class="field"><label for="rc-note">ผู้จำหน่าย / เลขใบส่งของ</label><input id="rc-note" type="text" data-bind="receive.note" value="${esc(R.note)}" placeholder="ใช้ซ้ำกับทุกรายการในใบส่งของเดียวกัน"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px">
+        <span class="small muted" id="rc-sum">${qn > 0 ? `= ${esc(fmtQty(p, qn * u.size))} · ทุนรวม ${baht(qn * (Number(R.cost) || 0))}` : 'ใส่จำนวนที่รับ'}</span>
+        <button class="btn primary lg" data-action="commit-receive">บันทึกรับเข้า</button>
+      </div>`;
+  }
+  return `
+  <div class="page-h"><div><h1>รับยาเข้า</h1><p>ทุกล็อตที่รับจะถูกบันทึกพร้อมเวลา — ใช้ “ยอดยกมา” ตอนเริ่มนับสต็อกครั้งแรก</p></div></div>
+  <div class="rc-grid">
+    <section class="panel rc-form">${form}</section>
+    <aside><div class="sec-h"><h2>รับเข้าล่าสุด</h2></div><div class="panel feed">${recent || '<div class="empty">ยังไม่มีรายการรับเข้า</div>'}</div></aside>
+  </div>`;
+}
+function startReceive(pid, r, unit) {
+  const p = S.products[pid]; const prev = S.receive;
+  const us = unitsOf(p);
+  let exp = r && r.exp || '';
+  if (r && r.lot && !exp) { const l = Object.values(p.lots || {}).find(x => x.lot.toUpperCase() === r.lot); if (l) exp = l.exp; }
+  S.receive = { pid, kind: prev.kind || 'receive', lot: (r && r.lot) || '', exp, qty: '', unit: unit || us[us.length - 1].name, cost: '', note: prev.note || '', fromScan: !!(r && (r.lot || r.exp)) };
+  S.page = 'receive'; render();
+  const el = document.getElementById(S.receive.lot && S.receive.exp ? 'rc-qty' : 'rc-lot'); if (el) el.focus();
+}
+async function commitReceive() {
+  const R = S.receive; const p = S.products[R.pid];
+  if (!p) return toast('สแกนหรือเลือกยาที่จะรับเข้าก่อน', 'err');
+  const lot = (R.lot || '').trim().toUpperCase();
+  const bad = (id, msg) => { toast(msg, 'err'); const el = document.getElementById(id); if (el) el.focus(); };
+  if (!lot) return bad('rc-lot', 'กรอกเลขล็อต (LOT) ตามที่พิมพ์บนกล่อง');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(R.exp)) return bad('rc-exp', 'ใส่วันหมดอายุ (EXP) ตามที่พิมพ์บนกล่อง');
+  const qty = Number(R.qty); if (!(qty > 0)) return bad('rc-qty', 'ใส่จำนวนที่รับมากกว่า 0');
+  const u = unitByName(p, R.unit); const cost = Number(R.cost) || 0; const at = new Date().toISOString();
+  let lotId = Object.keys(p.lots || {}).find(id => p.lots[id].lot.toUpperCase() === lot);
+  if (!lotId) { lotId = uid('l'); await Store.update('products', R.pid, { lots: { [lotId]: { lot, exp: R.exp, addedAt: at } } }); }
+  else if (p.lots[lotId].exp !== R.exp) await Store.update('products', R.pid, { lots: { [lotId]: { exp: R.exp } } });
+  await record([{ id: uid('m'), at, type: R.kind, pid: R.pid, lotId, qty: qty * u.size, unit: u.name, unitQty: qty, unitPrice: cost, amount: cost * qty, note: (R.note || '').trim() }]);
+  toast(`รับ ${p.name} ${qty} ${u.name} (LOT ${lot}) แล้ว`);
+  S.receive = { pid: null, kind: R.kind, lot: '', exp: '', qty: '', unit: '', cost: '', note: R.note, fromScan: false };
+  render(); $('#scanInput').focus();
+}
+
+/* ---------- stock ---------- */
+function viewStock() {
+  const f = S.stock; const q = f.q.trim().toLowerCase();
+  const all = Object.entries(S.products).map(([pid, p]) => ({ pid, p, st: statusOf(pid) }));
+  const counts = { all: all.length, exp: 0, near: 0, low: 0 };
+  all.forEach(r => { if (r.st.expired.length) counts.exp++; if (r.st.nearLots.length) counts.near++; if (r.st.low || r.st.out) counts.low++; });
+  const rows = all.filter(({ p, st }) => {
+    if (f.cat && p.cat !== f.cat) return false;
+    if (f.status === 'exp' && !st.expired.length) return false;
+    if (f.status === 'near' && !st.nearLots.length) return false;
+    if (f.status === 'low' && !(st.low || st.out)) return false;
+    if (q && ![p.name, p.generic, p.strength, p.regNo, ...Object.keys(p.codes || {})].join(' ').toLowerCase().includes(q)) return false;
+    return true;
+  }).sort((a, b) => a.p.name.localeCompare(b.p.name, 'th'));
+  const body = rows.map(({ pid, p, st }) => `<tr class="click" data-action="open-product" data-pid="${esc(pid)}" tabindex="0">
+      <td><div class="name">${esc(p.name)}</div><div class="sub">${pSub(p)}</div></td>
+      <td><span class="${catCls(p.cat)}">${esc(p.cat || '—')}</span></td>
+      <td class="r"><div class="mono">${esc(fmtQty(p, st.total))}</div><div class="small muted">${st.lots.length} ล็อต</div></td>
+      <td>${st.nextLot ? lotChip(st.nextLot, true) : (st.expired[0] ? lotChip(st.expired[0], true) : '<span class="muted">—</span>')}</td>
+      <td>${statusPill(st)}</td></tr>`).join('');
+  const segBtn = (id, label, n) => `<button data-action="stock-status" data-s="${id}" aria-pressed="${f.status === id}">${label}${n != null ? ` <span class="mono">${n}</span>` : ''}</button>`;
+  return `
+  <div class="page-h"><div><h1>คลังยา</h1><p>${all.length} รายการ · กดที่แถวเพื่อดูล็อต ปรับยอด หรือพิมพ์บาร์โค้ด</p></div><button class="btn primary" data-action="new-product">${ic(ICON.plus, 18)}เพิ่มยาใหม่</button></div>
+  <div class="filters">
+    <div class="field"><label for="st-q">ค้นหา</label><input id="st-q" type="search" data-bind="stock.q" data-change="rerender" data-input-render value="${esc(f.q)}" placeholder="ชื่อยา ชื่อสามัญ บาร์โค้ด"></div>
+    <div class="field"><label for="st-cat">ประเภทยา</label><select id="st-cat" data-bind="stock.cat" data-change="rerender"><option value="">ทุกประเภท</option>${CATS.map(c => `<option${c === f.cat ? ' selected' : ''}>${c}</option>`).join('')}</select></div>
+    <div class="field"><span class="label">สถานะ</span><div class="seg">${segBtn('all', 'ทั้งหมด')}${segBtn('exp', 'หมดอายุค้าง', counts.exp)}${segBtn('near', 'ใกล้หมดอายุ', counts.near)}${segBtn('low', 'ใกล้หมด/หมด', counts.low)}</div></div>
+  </div>
+  ${body ? `<div class="tablewrap"><table><thead><tr><th>ยา</th><th>ประเภท</th><th class="r">คงเหลือ</th><th>ล็อตถัดไปที่ต้องขาย</th><th>สถานะ</th></tr></thead><tbody>${body}</tbody></table></div>`
+    : `<div class="panel empty"><h3>${all.length ? 'ไม่พบยาตามเงื่อนไข' : 'ยังไม่มียาในคลัง'}</h3>${all.length ? 'ลองล้างคำค้นหรือเปลี่ยนสถานะ' : 'สแกนกล่องยาตัวแรก หรือกด “เพิ่มยาใหม่”'}</div>`}`;
+}
+
+/* ---------- ledger ---------- */
+function ledgerRows() {
+  const f = S.lg; const q = f.q.trim().toLowerCase();
+  return D.moves.filter(m => {
+    const p = S.products[m.pid]; if (!p) return false;
+    const k = dayKey(new Date(m.at));
+    if (f.from && k < f.from) return false;
+    if (f.to && k > f.to) return false;
+    if (f.type && m.type !== f.type) return false;
+    if (f.cat && p.cat !== f.cat) return false;
+    if (q) { const l = (p.lots || {})[m.lotId]; if (![p.name, p.generic, l && l.lot, m.bill, m.note].join(' ').toLowerCase().includes(q)) return false; }
+    return true;
+  });
+}
+function viewLedger() {
+  const rows = ledgerRows();
+  const sold = rows.filter(m => m.type === 'sale').reduce((s, m) => s + (m.amount || 0), 0) - rows.filter(m => m.type === 'void').reduce((s, m) => s + (m.amount || 0), 0);
+  const bought = rows.filter(m => m.type === 'receive').reduce((s, m) => s + (m.amount || 0), 0);
+  const shown = rows.slice(0, 400);
+  const body = shown.map(m => {
+    const p = S.products[m.pid]; const l = (p.lots || {})[m.lotId];
+    return `<tr class="click" data-action="open-product" data-pid="${esc(m.pid)}"><td class="mono small" style="white-space:nowrap">${fmtDate(m.at)}<br><span class="muted">${fmtTime(m.at)}</span></td>
+      <td><span class="pill ${TYPES[m.type].cls}">${TYPES[m.type].label}</span></td>
+      <td><div class="name">${esc(p.name)}</div><div class="${catCls(p.cat)}">${esc(p.cat || '')}</div></td>
+      <td>${l ? lotChip(l) : '—'}</td>
+      <td class="r mono ${m.qty > 0 ? 'qty-plus' : ''}" style="white-space:nowrap">${m.qty > 0 ? '+' : '−'}${esc(trimNum(Math.abs(m.unitQty || 0)))} ${esc(m.unit || '')}</td>
+      <td class="r mono">${m.amount ? baht(m.amount) : '—'}</td>
+      <td class="small">${m.bill ? `<span class="mono">${esc(m.bill)}</span><br>` : ''}<span class="muted">${esc(m.note || '')}</span></td></tr>`;
+  }).join('');
+  return `
+  <div class="page-h"><div><h1>ประวัติการเคลื่อนไหว</h1><p>ทุกการรับเข้า ขาย ปรับยอด และตัดทิ้ง พร้อมวันเวลาและล็อต — กรองตามประเภทยาเพื่อทำบัญชี ขย.</p></div>
+    <button class="btn" data-action="export-csv">ส่งออก CSV</button></div>
+  <div class="filters">
+    <div class="field"><label for="lg-from">ตั้งแต่</label><input id="lg-from" type="date" data-bind="lg.from" data-change="rerender" value="${esc(S.lg.from)}"></div>
+    <div class="field"><label for="lg-to">ถึง</label><input id="lg-to" type="date" data-bind="lg.to" data-change="rerender" value="${esc(S.lg.to)}"></div>
+    <div class="field"><label for="lg-type">รายการ</label><select id="lg-type" data-bind="lg.type" data-change="rerender"><option value="">ทุกรายการ</option>${Object.entries(TYPES).map(([k, t]) => `<option value="${k}"${k === S.lg.type ? ' selected' : ''}>${t.label}</option>`).join('')}</select></div>
+    <div class="field"><label for="lg-cat">ประเภทยา</label><select id="lg-cat" data-bind="lg.cat" data-change="rerender"><option value="">ทุกประเภท</option>${CATS.map(c => `<option${c === S.lg.cat ? ' selected' : ''}>${c}</option>`).join('')}</select></div>
+    <div class="field"><label for="lg-q">ค้นหา</label><input id="lg-q" type="search" data-bind="lg.q" data-input-render value="${esc(S.lg.q)}" placeholder="ชื่อยา ล็อต เลขบิล"></div>
+  </div>
+  <div class="sumline"><span><b>${rows.length}</b> รายการ</span><span>ขายสุทธิ <b>${baht(sold)}</b></span><span>ทุนรับเข้า <b>${baht(bought)}</b></span>${rows.length > shown.length ? `<span>แสดง 400 รายการล่าสุด — ส่งออก CSV เพื่อดูทั้งหมด</span>` : ''}</div>
+  ${body ? `<div class="tablewrap"><table><thead><tr><th>วันเวลา</th><th>รายการ</th><th>ยา</th><th>ล็อต</th><th class="r">จำนวน</th><th class="r">เงิน</th><th>บิล / หมายเหตุ</th></tr></thead><tbody>${body}</tbody></table></div>` : '<div class="panel empty">ไม่มีรายการในช่วงนี้</div>'}`;
+}
+
+/* ---------- settings ---------- */
+function viewSettings() {
+  const st = settings();
+  const nMoves = D.moves.length, nDays = Object.keys(S.days).length;
+  return `
+  <div class="page-h"><div><h1>ตั้งค่าและข้อมูล</h1></div></div>
+  <div class="grid2" style="align-items:start">
+    <section class="panel rc-form">
+      <h2>ร้าน</h2>
+      <div class="field"><label for="set-shop">ชื่อร้าน</label><input id="set-shop" type="text" value="${esc(st.shopName)}"></div>
+      <div class="field"><label for="set-near">เตือนใกล้หมดอายุล่วงหน้า (วัน)</label><input id="set-near" class="mono" type="number" min="7" max="720" value="${st.nearDays}"></div>
+      <div><button class="btn primary" data-action="save-settings">บันทึกการตั้งค่า</button></div>
+    </section>
+    <section class="panel rc-form">
+      <h2>ข้อมูล</h2>
+      <p class="small muted">${Store.kind === 'db' ? 'ข้อมูลเก็บบนคลาวด์ของลิงก์นี้ เปิดจากมือถือหรือคอมก็เห็นข้อมูลเดียวกัน' : 'ข้อมูลเก็บในเบราว์เซอร์เครื่องนี้เท่านั้น — สำรองเป็นไฟล์เป็นประจำ'} · ยา ${Object.keys(S.products).length} รายการ · ${nMoves} การเคลื่อนไหวใน ${nDays} วัน</p>
+      <div class="actions"><button class="btn" data-action="export-json">สำรองข้อมูล (.json)</button><button class="btn" data-action="import-json">นำเข้าไฟล์สำรอง</button><button class="btn" data-action="export-csv-all">ส่งออกประวัติทั้งหมด (CSV)</button></div>
+    </section>
+    <section class="panel rc-form" style="grid-column:1 / -1">
+      <h2>บาร์โค้ดที่อ่านได้</h2>
+      <dl class="kv">
+        <dt>EAN-13 / UPC</dt><dd>บาร์โค้ดเส้นบนกล่องยาไทยทั่วไป — บอกว่าเป็นยาตัวไหน ต้องกรอก LOT/EXP เองตอนรับเข้า</dd>
+        <dt>GS1 DataMatrix</dt><dd>สี่เหลี่ยม 2 มิติบนยานำเข้า — อ่านรหัสยา <span class="mono">(01)</span>, วันหมดอายุ <span class="mono">(17)</span>, ล็อต <span class="mono">(10)</span> ให้อัตโนมัติ</dd>
+        <dt>บาร์โค้ดร้าน</dt><dd>สำหรับยาที่ไม่มีบาร์โค้ด หรือแผงที่แยกขาย — สร้างรหัส <span class="mono">20xxxxxxxxxxx</span> ในหน้าแก้ไขยาแล้วพิมพ์ติด</dd>
+        <dt>วิธีสแกน</dt><dd>เครื่องสแกน USB/บลูทูธ (ยิงได้ทันทีโดยไม่ต้องคลิกช่อง), ปุ่ม “กล้อง”, หรือ “ถ่ายรูป” ถ้าเบราว์เซอร์ไม่อนุญาตกล้องสด</dd>
+      </dl>
+    </section>
+  </div>`;
+}
+const VIEWS = { home: viewHome, sale: viewSale, receive: viewReceive, stock: viewStock, ledger: viewLedger, settings: viewSettings };
+
+/* ---------- product drawer ---------- */
+function openDrawer(pid) { S.drawer = { mode: 'view', pid }; render(); }
+function blankDraft(r) {
+  const code = r ? (r.kind === 'gs1' ? r.key : r.code) : '';
+  return { name: '', generic: '', strength: '', form: 'เม็ด', cat: 'ยาอันตราย', regNo: '', reorder: '',
+    units: [{ name: 'เม็ด', size: 1, price: '' }, { name: 'แผง', size: 10, price: '' }, { name: 'กล่อง', size: 100, price: '' }],
+    codes: code ? [{ code, unit: 'กล่อง' }] : [], lots: {} };
+}
+function openNewProduct(r) {
+  S.drawer = { mode: 'edit', pid: null, draft: blankDraft(r), scan: r || null }; render();
+  const el = document.getElementById('pd-name'); if (el) el.focus();
+}
+function renderDrawer() {
+  const dr = S.drawer;
+  if (!dr) { $('#drawerRoot').innerHTML = ''; return; }
+  const html = dr.mode === 'view' ? drawerView(dr) : drawerEdit(dr);
+  if (!html) { S.drawer = null; $('#drawerRoot').innerHTML = ''; return; }
+  const body = $('#drawerRoot .drawer-b'); const top = body ? body.scrollTop : 0;
+  $('#drawerRoot').innerHTML = `<div class="scrim" data-action="close-drawer"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="ข้อมูลยา">${html}</aside>`;
+  const nb = $('#drawerRoot .drawer-b'); if (nb) nb.scrollTop = top;
+}
+function drawerView({ pid }) {
+  const p = S.products[pid]; if (!p) return '';
+  const st = statusOf(pid); const us = unitsOf(p);
+  const lots = lotsOf(pid);
+  const lotRows = lots.map(l => `<tr><td>${lotChip(l, true)}</td><td class="r mono">${esc(fmtQty(p, l.qty))}</td><td>${l.qty > 0 ? expText(l.exp) : '<span class="pill">หมดแล้ว</span>'}</td>
+      <td class="r" style="white-space:nowrap"><button class="btn sm ghost" data-action="lot-adjust" data-lot="${esc(l.id)}">ปรับยอด</button>${l.qty > 0 ? `<button class="btn sm ghost" data-action="lot-dispose" data-lot="${esc(l.id)}">ตัดทิ้ง</button>` : ''}</td></tr>`).join('');
+  const hist = D.moves.filter(m => m.pid === pid).slice(0, 40).map(m => {
+    const l = (p.lots || {})[m.lotId];
+    return `<div class="item" style="grid-template-columns:auto auto minmax(0,1fr) auto"><span class="mono small muted" style="white-space:nowrap">${fmtDate(m.at).replace(/ \d{4}$/, '')} ${fmtTime(m.at)}</span><span class="pill ${TYPES[m.type].cls}">${TYPES[m.type].label}</span><span class="small muted mono" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l ? 'LOT ' + esc(l.lot) : ''}${m.bill ? ' · ' + esc(m.bill) : ''}</span><span class="mono small ${m.qty > 0 ? 'qty-plus' : ''}">${m.qty > 0 ? '+' : ''}${esc(fmtQty(p, m.qty))}</span></div>`;
+  }).join('');
+  const codes = Object.entries(p.codes || {});
+  return `
+  <div class="drawer-h"><div><h2 style="font-size:21px">${esc(p.name)}</h2><div class="sub">${pSub(p)}${p.form ? ' · ' + esc(p.form) : ''}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><span class="${catCls(p.cat)}">${esc(p.cat || '')}</span>${p.regNo ? `<span class="cat mono">Reg. ${esc(p.regNo)}</span>` : ''}${p.sample ? '<span class="pill">ตัวอย่าง</span>' : ''}</div></div>
+    <button class="icon-btn" data-action="close-drawer" aria-label="ปิด">${ic(ICON.x)}</button></div>
+  <div class="drawer-b">
+    <div class="actions"><button class="btn primary" data-action="drawer-sell">${ic(ICON.sale, 18)}ใส่บิลขาย</button><button class="btn" data-action="drawer-receive">${ic(ICON.receive, 18)}รับเข้า</button><button class="btn" data-action="edit-product">แก้ไขข้อมูลยา</button>${codes.some(([c]) => /^\d{13}$/.test(normCode(c))) ? '<button class="btn ghost" data-action="label">พิมพ์บาร์โค้ด</button>' : ''}</div>
+    <section><div class="sec-h"><h3>คงเหลือ</h3>${statusPill(st)}</div>
+      <div class="figs" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="fig"><div class="fig-v" style="font-size:22px">${esc(fmtQty(p, st.total))}</div><div class="fig-k">ทั้งหมด ${esc(trimNum(st.total))} ${esc(us[0].name)}</div></div>
+      <div class="fig"><div class="fig-v" style="font-size:22px">${esc(fmtQty(p, Math.max(0, st.sellable)))}</div><div class="fig-k">ขายได้ (ไม่รวมล็อตหมดอายุ)${p.reorder ? ` · จุดสั่งซื้อ ${esc(fmtQty(p, p.reorder))}` : ''}</div></div></div></section>
+    <section><div class="sec-h"><h3>ล็อต</h3><span class="small muted">เรียงตามวันหมดอายุ — ขายจากบนลงล่าง</span></div>
+      ${lotRows ? `<div class="tablewrap"><table><tbody>${lotRows}</tbody></table></div>` : '<div class="panel empty">ยังไม่มีล็อต — กด “รับเข้า”</div>'}</section>
+    <section><div class="sec-h"><h3>หน่วยและราคาขาย</h3></div>
+      <div class="tablewrap"><table><tbody>${us.map(u => `<tr><td>${esc(u.name)}</td><td class="mono muted">${u.size} ${esc(us[0].name)}</td><td class="r mono">${baht(u.price)}</td></tr>`).join('')}</tbody></table></div></section>
+    <section><div class="sec-h"><h3>บาร์โค้ด</h3></div>
+      ${codes.length ? `<div class="tablewrap"><table><tbody>${codes.map(([c, u]) => `<tr><td class="mono">${esc(c)}</td><td class="muted">${/^20\d{11}$/.test(c) ? 'บาร์โค้ดร้าน · ' : c.length === 14 ? 'GTIN-14 · ' : ''}สแกนแล้วเป็น ${esc(u)}</td></tr>`).join('')}</tbody></table></div>` : '<div class="panel empty">ยังไม่มีบาร์โค้ด — กดแก้ไขเพื่อเพิ่มหรือสร้างบาร์โค้ดร้าน</div>'}</section>
+    <section><div class="sec-h"><h3>ประวัติ</h3><span class="small muted">${D.moves.filter(m => m.pid === pid).length} รายการ</span></div>
+      <div class="panel feed">${hist || '<div class="empty">ยังไม่มีการเคลื่อนไหว</div>'}</div></section>
+  </div>`;
+}
+function drawerEdit(dr) {
+  const d = dr.draft; const isNew = !dr.pid;
+  const unitNames = d.units.map(u => u.name).filter(Boolean);
+  const r = dr.scan;
+  return `
+  <div class="drawer-h"><div><h2 style="font-size:21px">${isNew ? 'เพิ่มยาใหม่' : 'แก้ไขข้อมูลยา'}</h2>${isNew && r ? `<div class="sub">ยังไม่มีบาร์โค้ด <span class="mono">${esc(r.code)}</span> ในคลัง — กรอกครั้งเดียว ครั้งหน้าสแกนแล้วขึ้นเลย</div>` : ''}
+    ${r && (r.lot || r.exp) ? `<div class="gs1note" style="margin-top:6px">อ่านจาก DataMatrix: ${lotChip({ lot: r.lot || '—', exp: r.exp || '' })} — จะพาไปรับเข้าหลังบันทึก</div>` : ''}</div>
+    <button class="icon-btn" data-action="close-drawer" aria-label="ปิด">${ic(ICON.x)}</button></div>
+  <div class="drawer-b">
+    <section style="display:flex;flex-direction:column;gap:14px">
+      <div class="field"><label for="pd-name">ชื่อยา (ที่ใช้เรียกในร้าน)</label><input id="pd-name" type="text" data-draft="name" value="${esc(d.name)}" placeholder="เช่น พาราเซตามอล 500"></div>
+      <div class="grid2">
+        <div class="field"><label for="pd-generic">ชื่อสามัญ</label><input id="pd-generic" type="text" data-draft="generic" value="${esc(d.generic)}" placeholder="Paracetamol"></div>
+        <div class="field"><label for="pd-strength">ความแรง / ขนาด</label><input id="pd-strength" type="text" data-draft="strength" value="${esc(d.strength)}" placeholder="500 mg"></div>
+        <div class="field"><label for="pd-form">รูปแบบ</label><select id="pd-form" data-draft="form">${FORMS.map(x => `<option${x === d.form ? ' selected' : ''}>${x}</option>`).join('')}</select></div>
+        <div class="field"><label for="pd-cat">ประเภทตามกฎหมาย</label><select id="pd-cat" data-draft="cat">${CATS.map(x => `<option${x === d.cat ? ' selected' : ''}>${x}</option>`).join('')}</select></div>
+        <div class="field"><label for="pd-reg">เลขทะเบียนตำรับยา</label><input id="pd-reg" class="mono" type="text" data-draft="regNo" value="${esc(d.regNo)}" placeholder="ไม่บังคับ"></div>
+        <div class="field"><label for="pd-reorder">จุดสั่งซื้อ (${esc(unitNames[0] || 'หน่วยเล็กสุด')})</label><input id="pd-reorder" class="mono" type="number" min="0" data-draft="reorder" value="${esc(d.reorder)}" placeholder="เตือนเมื่อเหลือเท่านี้"></div>
+      </div>
+    </section>
+    <section><div class="sec-h"><h3>หน่วยนับ</h3><span class="small muted">แถวแรกคือหน่วยเล็กสุด (ขนาด 1)</span></div>
+      <div class="editrows">
+        <div class="editrow units small muted"><span>ชื่อหน่วย</span><span>มีกี่หน่วยเล็ก</span><span>ราคาขาย (฿)</span><span></span></div>
+        ${d.units.map((u, i) => `<div class="editrow units"><input id="pu-n-${i}" type="text" data-unit="${i}:name" value="${esc(u.name)}" aria-label="ชื่อหน่วย"><input id="pu-s-${i}" class="mono" type="number" min="1" data-unit="${i}:size" value="${esc(u.size)}"${i === 0 ? ' readonly' : ''} aria-label="ขนาด"><input id="pu-p-${i}" class="mono" type="number" min="0" step="0.25" data-unit="${i}:price" value="${esc(u.price)}" aria-label="ราคา">${i === 0 ? '<span></span>' : `<button class="icon-btn" data-action="unit-remove" data-i="${i}" aria-label="ลบหน่วย">${ic(ICON.x, 16)}</button>`}</div>`).join('')}
+      </div>
+      <button class="btn sm ghost" style="margin-top:8px" data-action="unit-add">${ic(ICON.plus, 16)}เพิ่มหน่วย</button></section>
+    <section><div class="sec-h"><h3>บาร์โค้ด</h3><span class="small muted">กล่องกับแผงอาจมีบาร์โค้ดต่างกัน</span></div>
+      <div class="editrows">
+        ${d.codes.map((c, i) => `<div class="editrow codes"><input id="pc-c-${i}" class="mono" type="text" data-code="${i}:code" value="${esc(c.code)}" aria-label="เลขบาร์โค้ด"><select id="pc-u-${i}" data-code="${i}:unit" aria-label="สแกนแล้วเป็นหน่วย">${unitNames.map(n => `<option${n === c.unit ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select><button class="icon-btn" data-action="code-remove" data-i="${i}" aria-label="ลบบาร์โค้ด">${ic(ICON.x, 16)}</button></div>`).join('') || '<div class="small muted">ยังไม่มีบาร์โค้ด</div>'}
+      </div>
+      <div class="actions" style="margin-top:8px"><button class="btn sm ghost" data-action="code-add">${ic(ICON.plus, 16)}เพิ่มบาร์โค้ด</button><button class="btn sm ghost" data-action="code-gen">สร้างบาร์โค้ดร้าน</button></div></section>
+  </div>
+  <div class="drawer-f">${!isNew && !D.moves.some(m => m.pid === dr.pid) ? '<button class="btn danger" data-action="delete-product" style="margin-right:auto">ลบยานี้</button>' : ''}<button class="btn ghost" data-action="${isNew ? 'close-drawer' : 'cancel-edit'}">ยกเลิก</button><button class="btn primary" data-action="save-product">${isNew ? 'บันทึกยา' : 'บันทึกการแก้ไข'}</button></div>`;
+}
+async function saveProduct() {
+  const dr = S.drawer; const d = dr.draft;
+  const name = d.name.trim(); if (!name) { toast('ใส่ชื่อยา', 'err'); $('#pd-name').focus(); return; }
+  const units = d.units.map(u => ({ name: String(u.name).trim(), size: Number(u.size), price: Number(u.price) || 0 })).filter(u => u.name);
+  if (!units.length) return toast('ต้องมีหน่วยนับอย่างน้อย 1 หน่วย', 'err');
+  units[0].size = 1;
+  if (units.some(u => !(u.size >= 1))) return toast('ขนาดหน่วยต้องเป็นตัวเลขตั้งแต่ 1 ขึ้นไป', 'err');
+  if (new Set(units.map(u => u.name)).size !== units.length) return toast('ชื่อหน่วยซ้ำกัน', 'err');
+  const codes = {};
+  for (const c of d.codes) {
+    const code = normCode(c.code || ''); if (!code) continue;
+    const hit = D.codeIndex[code]; if (hit && hit.pid !== dr.pid) return toast(`บาร์โค้ด ${code} เป็นของ ${S.products[hit.pid].name} อยู่แล้ว`, 'err');
+    codes[code] = units.some(u => u.name === c.unit) ? c.unit : units[0].name;
+  }
+  const pid = dr.pid || uid('p');
+  const prev = dr.pid ? S.products[dr.pid] : {};
+  const doc = Object.assign(clone(prev) || {}, { name, generic: d.generic.trim(), strength: d.strength.trim(), form: d.form, cat: d.cat, regNo: d.regNo.trim(), reorder: Number(d.reorder) || 0, units, codes, lots: clone(prev.lots) || {} });
+  delete doc.sample;
+  if (prev.sample) doc.sample = true;
+  await Store.set('products', pid, doc);
+  S.products[pid] = doc; compute();
+  const scan = dr.scan;
+  toast(dr.pid ? 'บันทึกการแก้ไขแล้ว' : `เพิ่ม ${name} แล้ว`);
+  if (!dr.pid && (scan || S.page === 'receive' || S.page === 'sale')) {
+    S.drawer = null;
+    if (S.page === 'sale') toast('ยาใหม่ยังไม่มีสต็อก — รับยาเข้าก่อนขาย');
+    const hit = scan && D.codeIndex[scan.key];
+    startReceive(pid, scan, hit && hit.unit);
+  } else { S.drawer = { mode: 'view', pid }; render(); }
+}
+
+/* ---------- modals ---------- */
+function renderModal() {
+  const m = S.modal;
+  if (!m) { $('#modalRoot').innerHTML = ''; return; }
+  let inner = '';
+  if (m.kind === 'adjust' || m.kind === 'dispose') {
+    const p = S.products[m.pid]; const l = lotsOf(m.pid).find(x => x.id === m.lotId); if (!p || !l) { S.modal = null; $('#modalRoot').innerHTML = ''; return; }
+    const us = unitsOf(p);
+    inner = m.kind === 'adjust' ? `
+      <h2>ปรับยอดตามที่นับได้</h2>
+      <div><div class="name">${esc(p.name)}</div><div style="margin-top:4px">${lotChip(l, true)}</div><div class="small muted" style="margin-top:6px">ในระบบ: ${esc(fmtQty(p, l.qty))}</div></div>
+      <div class="grid2"><div class="field"><label for="md-qty">นับได้จริง</label><input id="md-qty" class="mono" type="number" min="0" step="1" value="${esc(m.qty)}" data-modal="qty"></div>
+        <div class="field"><label for="md-unit">หน่วย</label><select id="md-unit" data-modal="unit">${us.map(u => `<option${u.name === m.unit ? ' selected' : ''}>${esc(u.name)}</option>`).join('')}</select></div></div>
+      <div class="field"><label for="md-note">เหตุผล</label><input id="md-note" type="text" data-modal="note" value="${esc(m.note)}" placeholder="เช่น นับสต็อกสิ้นเดือน"></div>
+      <div class="small" id="md-diff">${adjustDiffText(m)}</div>
+      <div class="foot"><button class="btn ghost" data-action="modal-close">ยกเลิก</button><button class="btn primary" data-action="adjust-save">บันทึกยอดใหม่</button></div>` : `
+      <h2>ตัดยาออกจากคลัง</h2>
+      <div><div class="name">${esc(p.name)}</div><div style="margin-top:4px">${lotChip(l, true)}</div><div class="small muted" style="margin-top:6px">คงเหลือล็อตนี้: ${esc(fmtQty(p, l.qty))}</div></div>
+      <div class="grid2"><div class="field"><label for="md-qty">จำนวนที่ตัดทิ้ง</label><input id="md-qty" class="mono" type="number" min="0" step="1" value="${esc(m.qty)}" data-modal="qty"></div>
+        <div class="field"><label for="md-unit">หน่วย</label><select id="md-unit" data-modal="unit">${us.map(u => `<option${u.name === m.unit ? ' selected' : ''}>${esc(u.name)}</option>`).join('')}</select></div></div>
+      <div class="field"><label for="md-reason">เหตุผล</label><select id="md-reason" data-modal="note">${['หมดอายุ', 'เสื่อมสภาพ / เสียหาย', 'คืนผู้จำหน่าย', 'อื่น ๆ'].map(x => `<option${x === m.note ? ' selected' : ''}>${x}</option>`).join('')}</select></div>
+      <div class="foot"><button class="btn ghost" data-action="modal-close">ยกเลิก</button><button class="btn danger" data-action="dispose-save">ตัดออกจากคลัง</button></div>`;
+  } else if (m.kind === 'void') {
+    inner = `<h2>ยกเลิกบิล ${esc(m.bill)}?</h2><p class="muted">ยาจะถูกคืนเข้าล็อตเดิม และบันทึกเป็นรายการ “ยกเลิกบิล” ในประวัติ (ไม่ลบรายการขายเดิม)</p>
+      <div class="foot"><button class="btn ghost" data-action="modal-close">ไม่ยกเลิก</button><button class="btn danger" data-action="void-confirm">ยกเลิกบิล</button></div>`;
+  } else if (m.kind === 'clear-sample') {
+    inner = `<h2>ลบข้อมูลตัวอย่าง?</h2><p class="muted">ลบยาตัวอย่าง ล็อต และการขายตัวอย่างทั้งหมด ข้อมูลที่คุณเพิ่มเองจะยังอยู่</p>
+      <div class="foot"><button class="btn ghost" data-action="modal-close">ยกเลิก</button><button class="btn danger" data-action="clear-sample-confirm">ลบข้อมูลตัวอย่าง</button></div>`;
+  } else if (m.kind === 'import') {
+    inner = `<h2>นำเข้าไฟล์สำรอง?</h2><p class="muted">พบยา ${Object.keys(m.data.products || {}).length} รายการ และประวัติ ${Object.keys(m.data.moves || {}).length} วัน ข้อมูลที่รหัสตรงกันจะถูกเขียนทับ</p>
+      <div class="foot"><button class="btn ghost" data-action="modal-close">ยกเลิก</button><button class="btn primary" data-action="import-confirm">นำเข้า</button></div>`;
+  } else if (m.kind === 'label') {
+    const p = S.products[m.pid]; const codes = Object.entries(p.codes || {}).map(([c, u]) => [normCode(c), u]).filter(([c]) => /^\d{13}$/.test(c));
+    const cur = codes.find(([c]) => c === m.code) || codes[0]; const u = unitByName(p, cur[1]);
+    inner = `<h2>พิมพ์บาร์โค้ด</h2>
+      <div class="field"><label for="md-code">บาร์โค้ด</label><select id="md-code" data-modal="code" data-rerender>${codes.map(([c, un]) => `<option value="${c}"${c === cur[0] ? ' selected' : ''}>${c} · ${esc(un)}</option>`).join('')}</select></div>
+      <div class="label-sheet" id="printArea"><div class="ln">${esc(p.name)}</div>${ean13Svg(cur[0])}<div class="lp">${esc(u.name)} ${baht(u.price)}</div></div>
+      <div class="foot"><button class="btn ghost" data-action="modal-close">ปิด</button><button class="btn primary" data-action="print-label">พิมพ์</button></div>`;
+  }
+  $('#modalRoot').innerHTML = `<div class="scrim" style="z-index:69" data-action="modal-close"></div><div class="modal-wrap" style="pointer-events:none"><div class="modal" role="dialog" aria-modal="true" style="pointer-events:auto">${inner}</div></div>`;
+}
+function adjustDiffText(m) {
+  const p = S.products[m.pid]; const l = lotsOf(m.pid).find(x => x.id === m.lotId);
+  if (m.qty === '' || m.qty == null) return '<span class="muted">ใส่จำนวนที่นับได้</span>';
+  const counted = Number(m.qty) * unitByName(p, m.unit).size; const diff = counted - l.qty;
+  if (!diff) return '<span class="muted">ตรงกับในระบบ ไม่ต้องปรับ</span>';
+  return `จะบันทึก <b class="mono">${diff > 0 ? '+' : ''}${esc(fmtQty(p, diff))}</b>`;
+}
+
+/* ---------- scanning ---------- */
+function handleScan(raw) {
+  raw = String(raw || '').replace(/[\r\n]+$/, '');
+  if (!raw.trim()) return;
+  hideSuggest();
+  const r = parseScan(raw);
+  const hit = r && D.codeIndex[r.key];
+  if (hit) return actOnProduct(hit.pid, r, hit.unit);
+  const ids = searchProducts(raw);
+  if (ids.length && (!r || r.kind === 'code')) return actOnProduct(ids[0], null, null);
+  if (r) return openNewProduct(r);
+  toast(`ไม่พบยา “${raw}” — ลองพิมพ์ชื่ออื่น หรือกดเพิ่มยาใหม่ในหน้าคลังยา`, 'err');
+}
+function actOnProduct(pid, r, unit) {
+  const p = S.products[pid];
+  let lotId = null;
+  if (r && r.lot) { const f = Object.entries(p.lots || {}).find(([, l]) => l.lot.toUpperCase() === r.lot); if (f) lotId = f[0]; }
+  S.modal = null;
+  if (S.page === 'sale') {
+    S.drawer = null; addToBasket(pid, unit, lotId); render();
+    if (r && r.exp && daysLeft(r.exp) < 0) toast(`กล่องที่สแกนหมดอายุแล้ว (EXP ${fmtExp(r.exp)}) — ห้ามขาย`, 'err');
+  } else if (S.page === 'receive') { S.drawer = null; startReceive(pid, r, unit); }
+  else openDrawer(pid);
+}
+function searchProducts(q) {
+  q = q.trim().toLowerCase(); if (!q) return [];
+  return Object.entries(S.products).filter(([, p]) => [p.name, p.generic, p.strength, ...Object.keys(p.codes || {})].join(' ').toLowerCase().includes(q))
+    .sort((a, b) => a[1].name.localeCompare(b[1].name, 'th')).slice(0, 6).map(([id]) => id);
+}
+function showSuggest() {
+  const v = $('#scanInput').value;
+  const looksCode = /^[\d\s()\]]+$/.test(v);
+  S.suggest = v.trim().length >= 2 && !looksCode ? searchProducts(v) : [];
+  S.suggestSel = 0;
+  const box = $('#suggest');
+  if (!S.suggest.length) { box.hidden = true; box.innerHTML = ''; return; }
+  box.innerHTML = S.suggest.map((pid, i) => { const p = S.products[pid]; return `<button type="button" class="${i === 0 ? 'sel' : ''}" data-action="suggest-pick" data-pid="${esc(pid)}"><span class="name">${esc(p.name)}</span><span class="sub">${pSub(p)}</span><span class="small mono muted" style="margin-left:auto">${esc(fmtQty(p, D.pQty[pid] || 0))}</span></button>`; }).join('');
+  box.hidden = false;
+}
+function hideSuggest() { S.suggest = []; const box = $('#suggest'); box.hidden = true; box.innerHTML = ''; }
+
+let cam = null, camDone = false;
+function formats() { const F = window.Html5QrcodeSupportedFormats; return [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E, F.DATA_MATRIX, F.CODE_128, F.QR_CODE]; }
+async function openCamera() {
+  if (typeof window.Html5Qrcode === 'undefined') return toast('โหลดตัวอ่านบาร์โค้ดจากกล้องไม่สำเร็จ — ใช้เครื่องสแกน USB หรือพิมพ์เลขแทน', 'err');
+  $('#camera').hidden = false; $('#camMsg').textContent = 'กำลังเปิดกล้อง…'; camDone = false;
+  try {
+    cam = new window.Html5Qrcode('reader', { formatsToSupport: formats(), verbose: false, experimentalFeatures: { useBarCodeDetectorIfSupported: true } });
+    await cam.start({ facingMode: 'environment' },
+      { fps: 12, qrbox: (w, h) => ({ width: Math.max(160, Math.round(Math.min(w * 0.86, 380))), height: Math.max(120, Math.round(Math.min(h * 0.62, 230))) }) },
+      text => { if (camDone) return; camDone = true; closeCamera().then(() => handleScan(text)); }, () => {});
+    $('#camMsg').textContent = 'เล็งบาร์โค้ดหรือ DataMatrix ให้อยู่ในกรอบ ถือนิ่ง ๆ ห่างประมาณ 10–15 ซม.';
+  } catch (e) {
+    $('#camMsg').innerHTML = 'เปิดกล้องสดในหน้านี้ไม่ได้ (เบราว์เซอร์ไม่อนุญาต) — ปิดหน้านี้แล้วใช้ปุ่ม <b>ถ่ายรูป</b> แทน หรือใช้เครื่องสแกน USB';
+  }
+}
+async function closeCamera() {
+  $('#camera').hidden = true;
+  if (cam) { try { if (cam.isScanning) await cam.stop(); cam.clear(); } catch (e) { /* already stopped */ } cam = null; }
+}
+async function scanPhoto(file) {
+  if (!file) return;
+  if (typeof window.Html5Qrcode === 'undefined') return toast('โหลดตัวอ่านบาร์โค้ดไม่สำเร็จ', 'err');
+  const r = new window.Html5Qrcode('fileReaderBox', { formatsToSupport: formats(), verbose: false });
+  try { const text = await r.scanFile(file, false); handleScan(text); }
+  catch (e) { toast('อ่านบาร์โค้ดจากรูปไม่ได้ — ถ่ายให้ใกล้ ชัด และไม่สะท้อนแสง', 'err'); }
+  finally { try { r.clear(); } catch (e) { /* noop */ } }
+}
+
+/* ---------- files ---------- */
+function csv(rows) { return '﻿' + rows.map(r => r.map(v => { const s = String(v ?? ''); return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\r\n'); }
+async function saveFile(filename, data, mime) {
+  const dl = await getCap('downloads');
+  if (dl) { try { await dl.save({ filename, data }); toast('บันทึกไฟล์แล้ว'); } catch (e) { if (e && e.code !== 'declined') toast('บันทึกไฟล์ไม่สำเร็จ: ' + (e.message || e.code), 'err'); } return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: mime })); a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+}
+function exportCSV(moves, name) {
+  const head = ['วันที่', 'เวลา', 'รายการ', 'ชื่อยา', 'ชื่อสามัญ', 'ความแรง', 'ประเภทยา', 'เลขทะเบียน', 'LOT', 'EXP', 'จำนวน', 'หน่วย', 'จำนวน(หน่วยเล็กสุด)', 'ราคาต่อหน่วย', 'จำนวนเงิน', 'เลขบิล', 'หมายเหตุ'];
+  const rows = moves.slice().reverse().map(m => { const p = S.products[m.pid] || {}; const l = (p.lots || {})[m.lotId] || {};
+    return [dayKey(new Date(m.at)), fmtTime(m.at), TYPES[m.type].label, p.name, p.generic, p.strength, p.cat, p.regNo, l.lot, l.exp, (m.qty > 0 ? '' : '-') + trimNum(Math.abs(m.unitQty || 0)), m.unit, m.qty, m.unitPrice, trimNum(m.amount || 0), m.bill, m.note]; });
+  saveFile(name, csv([head, ...rows]), 'text/csv');
+}
+
+/* ================= actions ================= */
+const A = {
+  go(el) { S.page = el.dataset.page; S.drawer = null; hideSuggest(); render(); window.scrollTo(0, 0); },
+  'open-product'(el) { openDrawer(el.dataset.pid); },
+  'close-drawer'() { S.drawer = null; render(); },
+  'new-product'() { openNewProduct(null); },
+  'edit-product'() { const p = S.products[S.drawer.pid]; const us = unitsOf(p);
+    S.drawer = { mode: 'edit', pid: S.drawer.pid, draft: { name: p.name || '', generic: p.generic || '', strength: p.strength || '', form: p.form || 'เม็ด', cat: p.cat || CATS[1], regNo: p.regNo || '', reorder: p.reorder || '', units: us.map(u => ({ ...u })), codes: Object.entries(p.codes || {}).map(([code, unit]) => ({ code, unit })) } }; render(); },
+  'cancel-edit'() { S.drawer = { mode: 'view', pid: S.drawer.pid }; render(); },
+  'drawer-sell'() { const pid = S.drawer.pid; addToBasket(pid, null, null); S.drawer = null; S.page = 'sale'; render(); },
+  'drawer-receive'() { const pid = S.drawer.pid; S.drawer = null; startReceive(pid, null, null); },
+  'unit-add'() { const d = S.drawer.draft; const last = d.units[d.units.length - 1]; d.units.push({ name: '', size: (Number(last && last.size) || 1) * 10, price: '' }); render(); },
+  'unit-remove'(el) { S.drawer.draft.units.splice(+el.dataset.i, 1); render(); },
+  'code-add'() { const d = S.drawer.draft; d.codes.push({ code: '', unit: d.units[0].name }); render(); const el = document.getElementById('pc-c-' + (d.codes.length - 1)); if (el) el.focus(); },
+  'code-remove'(el) { S.drawer.draft.codes.splice(+el.dataset.i, 1); render(); },
+  'code-gen'() { const d = S.drawer.draft; d.codes.push({ code: newStoreCode(), unit: (d.units[1] || d.units[0]).name }); render(); },
+  'save-product'() { safe(saveProduct); },
+  'delete-product'() { safe(async () => { const pid = S.drawer.pid; const name = S.products[pid].name; await Store.del('products', pid); S.drawer = null; toast(`ลบ ${name} แล้ว`); render(); }); },
+  'basket-step'(el) { const ln = S.basket[+el.dataset.i]; ln.qty = Math.max(1, ln.qty + +el.dataset.d); render(); },
+  'basket-remove'(el) { S.basket.splice(+el.dataset.i, 1); render(); },
+  'basket-clear'() { S.basket = []; S.saleNote = ''; render(); },
+  'commit-sale'() { safe(commitSale); },
+  'void-bill'(el) { S.modal = { kind: 'void', bill: el.dataset.bill }; render(); },
+  'void-confirm'() { safe(async () => { const bill = S.modal.bill; const at = new Date().toISOString();
+    const entries = D.moves.filter(m => m.bill === bill && m.type === 'sale').map(m => ({ id: uid('m'), at, type: 'void', pid: m.pid, lotId: m.lotId, qty: -m.qty, unit: m.unit, unitQty: m.unitQty, unitPrice: m.unitPrice, amount: m.amount, bill, note: 'ยกเลิกบิล ' + bill }));
+    await record(entries); S.modal = null; toast(`ยกเลิกบิล ${bill} แล้ว ยาคืนเข้าคลัง`); render(); }); },
+  'receive-clear'() { S.receive.pid = null; S.receive.fromScan = false; render(); $('#scanInput').focus(); },
+  'receive-kind'(el) { S.receive.kind = el.dataset.kind; render(); },
+  'commit-receive'() { safe(commitReceive); },
+  'stock-status'(el) { S.stock.status = el.dataset.s; render(); },
+  'lot-adjust'(el) { const p = S.products[S.drawer.pid]; const l = lotsOf(S.drawer.pid).find(x => x.id === el.dataset.lot); const u = unitsOf(p)[0];
+    S.modal = { kind: 'adjust', pid: S.drawer.pid, lotId: l.id, qty: l.qty, unit: u.name, note: '' }; render(); const i = $('#md-qty'); if (i) i.select(); },
+  'lot-dispose'(el) { const p = S.products[S.drawer.pid]; const l = lotsOf(S.drawer.pid).find(x => x.id === el.dataset.lot);
+    S.modal = { kind: 'dispose', pid: S.drawer.pid, lotId: l.id, qty: l.qty, unit: unitsOf(p)[0].name, note: daysLeft(l.exp) < 0 ? 'หมดอายุ' : 'เสื่อมสภาพ / เสียหาย' }; render(); },
+  'adjust-save'() { safe(async () => { const m = S.modal; const p = S.products[m.pid]; const l = lotsOf(m.pid).find(x => x.id === m.lotId); const u = unitByName(p, m.unit);
+    if (m.qty === '' || !(Number(m.qty) >= 0)) return toast('ใส่จำนวนที่นับได้', 'err');
+    const diff = Number(m.qty) * u.size - l.qty; if (!diff) { S.modal = null; render(); return toast('ยอดตรงกับในระบบ ไม่ได้บันทึกเพิ่ม'); }
+    await record([{ id: uid('m'), at: new Date().toISOString(), type: 'adjust', pid: m.pid, lotId: m.lotId, qty: diff, unit: unitsOf(p)[0].name, unitQty: diff, unitPrice: 0, amount: 0, note: m.note || 'นับสต็อก' }]);
+    S.modal = null; toast('ปรับยอดแล้ว'); render(); }); },
+  'dispose-save'() { safe(async () => { const m = S.modal; const p = S.products[m.pid]; const l = lotsOf(m.pid).find(x => x.id === m.lotId); const u = unitByName(p, m.unit);
+    const base = Number(m.qty) * u.size; if (!(base > 0)) return toast('ใส่จำนวนที่ตัดทิ้ง', 'err'); if (base > l.qty) return toast(`ล็อตนี้เหลือแค่ ${fmtQty(p, l.qty)}`, 'err');
+    await record([{ id: uid('m'), at: new Date().toISOString(), type: 'dispose', pid: m.pid, lotId: m.lotId, qty: -base, unit: u.name, unitQty: Number(m.qty), unitPrice: 0, amount: 0, note: m.note }]);
+    S.modal = null; toast('ตัดออกจากคลังแล้ว'); render(); }); },
+  'modal-close'() { S.modal = null; render(); },
+  label() { S.modal = { kind: 'label', pid: S.drawer.pid, code: null }; render(); },
+  'print-label'() { try { window.print(); } catch (e) { toast('หน้านี้สั่งพิมพ์ไม่ได้ — ถ่ายหน้าจอบาร์โค้ดไปพิมพ์แทน', 'err'); } },
+  'camera-open'() { openCamera(); },
+  'camera-close'() { closeCamera(); },
+  'suggest-pick'(el) { $('#scanInput').value = ''; hideSuggest(); actOnProduct(el.dataset.pid, null, null); },
+  'demo-scan'(el) { const d = S.meta.demo.codes[+el.dataset.i]; handleScan(d.code.split('<GS>').join(GS)); },
+  'save-settings'() { safe(async () => { const shopName = $('#set-shop').value.trim() || 'ร้านยาของฉัน'; const nearDays = Math.min(720, Math.max(7, Number($('#set-near').value) || 90));
+    await Store.set('meta', 'settings', { shopName, nearDays }); toast('บันทึกการตั้งค่าแล้ว'); }); },
+  'export-csv'() { exportCSV(ledgerRows(), `ประวัติยา_${S.lg.from || 'ทั้งหมด'}_${S.lg.to || todayKey()}.csv`); },
+  'export-csv-all'() { exportCSV(D.moves, `ประวัติยา_ทั้งหมด_${todayKey()}.csv`); },
+  'export-json'() { saveFile(`สมุดคลังยา_สำรอง_${todayKey()}.json`, JSON.stringify({ app: 'samut-khlang-ya', version: 1, exportedAt: new Date().toISOString(), products: S.products, moves: S.days, meta: { settings: S.meta.settings || null } }, null, 1), 'application/json'); },
+  'import-json'() { $('#importInput').click(); },
+  'import-confirm'() { safe(async () => { const data = S.modal.data;
+    for (const [id, p] of Object.entries(data.products || {})) await Store.set('products', id, p);
+    for (const [id, dd] of Object.entries(data.moves || {})) await Store.set('moves', id, dd);
+    if (data.meta && data.meta.settings) await Store.set('meta', 'settings', data.meta.settings);
+    S.modal = null; toast('นำเข้าข้อมูลแล้ว'); render(); }); },
+  'clear-sample'() { S.modal = { kind: 'clear-sample' }; render(); },
+  'clear-sample-confirm'() { safe(async () => {
+    for (const [id, dd] of Object.entries(S.days)) {
+      const keep = Object.fromEntries(Object.entries(dd.entries || {}).filter(([, e]) => !e.sample));
+      if (!Object.keys(keep).length) await Store.del('moves', id);
+      else if (Object.keys(keep).length !== Object.keys(dd.entries || {}).length) await Store.set('moves', id, { date: dd.date || id, entries: keep });
+    }
+    for (const [id, p] of Object.entries(S.products)) if (p.sample) await Store.del('products', id);
+    if (S.meta.demo) await Store.del('meta', 'demo');
+    S.basket = S.basket.filter(b => S.products[b.pid] && !S.products[b.pid].sample);
+    S.modal = null; S.drawer = null; toast('ลบข้อมูลตัวอย่างแล้ว — เริ่มสแกนยาจริงได้เลย'); render(); }); },
+};
+const CHANGE = {
+  rerender() { render(); },
+  'basket-unit'(el) { S.basket[+el.dataset.i].unit = el.value; render(); },
+  'basket-qty'(el) { S.basket[+el.dataset.i].qty = Math.max(1, Math.floor(Number(el.value) || 1)); render(); },
+  'receive-lot'(el) { const p = S.products[S.receive.pid]; const v = el.value.trim().toUpperCase(); const l = p && Object.values(p.lots || {}).find(x => x.lot.toUpperCase() === v);
+    if (l && !S.receive.exp) { S.receive.exp = l.exp; render(); } },
+};
+function setPath(path, value) { const ks = path.split('.'); let o = S; while (ks.length > 1) o = o[ks.shift()]; o[ks[0]] = value; }
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]'); if (!el) return;
+  const fn = A[el.dataset.action]; if (!fn) return;
+  if (el.tagName === 'BUTTON' || el.tagName === 'A') e.preventDefault();
+  fn(el, e);
+});
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (el.id === 'scanInput') { showSuggest(); return; }
+  if (el.dataset.bind) { setPath(el.dataset.bind, el.value); if (el.dataset.inputRender !== undefined) render(); if (el.dataset.live) { const R = S.receive; const p = S.products[R.pid]; const box = document.getElementById(el.dataset.live); if (p && box) { const u = unitByName(p, R.unit); const qn = Number(R.qty) || 0; box.textContent = qn > 0 ? `= ${fmtQty(p, qn * u.size)} · ทุนรวม ${baht(qn * (Number(R.cost) || 0))}` : 'ใส่จำนวนที่รับ'; } } }
+  if (el.dataset.draft) S.drawer.draft[el.dataset.draft] = el.value;
+  if (el.dataset.unit) { const [i, k] = el.dataset.unit.split(':'); S.drawer.draft.units[+i][k] = el.value; }
+  if (el.dataset.code) { const [i, k] = el.dataset.code.split(':'); S.drawer.draft.codes[+i][k] = el.value; }
+  if (el.dataset.modal) { S.modal[el.dataset.modal] = el.value; const box = $('#md-diff'); if (box && S.modal.kind === 'adjust') box.innerHTML = adjustDiffText(S.modal); }
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.id === 'photoInput') { scanPhoto(el.files[0]); el.value = ''; return; }
+  if (el.id === 'importInput') { const f = el.files[0]; el.value = ''; if (!f) return;
+    f.text().then(t => { const data = JSON.parse(t); if (!data || data.app !== 'samut-khlang-ya') throw new Error('bad'); S.modal = { kind: 'import', data }; render(); })
+      .catch(() => toast('ไฟล์นี้ไม่ใช่ไฟล์สำรองของสมุดคลังยา', 'err')); return; }
+  if (el.dataset.bind) setPath(el.dataset.bind, el.value);
+  if (el.dataset.draft) { S.drawer.draft[el.dataset.draft] = el.value; }
+  if (el.dataset.unit) { const [i, k] = el.dataset.unit.split(':'); S.drawer.draft.units[+i][k] = el.value; if (k === 'name') render(); }
+  if (el.dataset.code) { const [i, k] = el.dataset.code.split(':'); S.drawer.draft.codes[+i][k] = el.value; }
+  if (el.dataset.modal) { S.modal[el.dataset.modal] = el.value; if (el.dataset.rerender !== undefined || el.tagName === 'SELECT') render(); }
+  if (el.dataset.change && CHANGE[el.dataset.change]) CHANGE[el.dataset.change](el);
+});
+$('#scanForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const inp = $('#scanInput'); const v = inp.value;
+  if (S.suggest.length && !parseScan(v)) { const pid = S.suggest[S.suggestSel] || S.suggest[0]; inp.value = ''; hideSuggest(); actOnProduct(pid, null, null); return; }
+  inp.value = ''; handleScan(v);
+});
+$('#scanInput').addEventListener('keydown', e => {
+  if (!S.suggest.length) return;
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault(); S.suggestSel = (S.suggestSel + (e.key === 'ArrowDown' ? 1 : -1) + S.suggest.length) % S.suggest.length;
+    [...$('#suggest').children].forEach((b, i) => b.classList.toggle('sel', i === S.suggestSel));
+  } else if (e.key === 'Escape') hideSuggest();
+});
+$('#scanInput').addEventListener('blur', () => setTimeout(hideSuggest, 180));
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (!$('#camera').hidden) closeCamera(); else if (S.modal) { S.modal = null; render(); } else if (S.drawer) { S.drawer = null; render(); } return; }
+  if (e.key === 'Enter' && e.target.matches && e.target.matches('tr[data-action]')) { e.target.click(); return; }
+  const t = e.target;
+  if (t.closest && t.closest('input,textarea,select,[contenteditable]')) return;
+  if (e.ctrlKey || e.metaKey || e.altKey || S.modal || !$('#camera').hidden) return;
+  if (e.key.length === 1) $('#scanInput').focus();
+});
+
+/* ================= boot ================= */
+(async function boot() {
+  const d14 = new Date(); d14.setDate(d14.getDate() - 13); S.lg.from = dayKey(d14); S.lg.to = todayKey();
+  render();
+  const db = await getCap('db');
+  Store = db ? dbStore(db) : localStore();
+  $('#storeDot').classList.add('on');
+  $('#storeText').textContent = Store.kind === 'db' ? 'ซิงก์ข้อมูลข้ามอุปกรณ์' : 'เก็บข้อมูลในเบราว์เซอร์นี้';
+  Store.watch('products', data => { S.products = data; S.ready.products = true; compute(); render(); });
+  Store.watch('moves', data => { S.days = data; S.ready.moves = true; compute(); render(); });
+  Store.watch('meta', data => { S.meta = data; render(); });
+})();
+})();
+</script>
